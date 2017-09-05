@@ -1,0 +1,22 @@
+{
+  "name": "photoprint",
+  "version": "1.0.0",
+  "description": "A demo app for the oauth2 protocol. This app is the consumer (client).",
+  "main": "app.js",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "cookie-parser": "^1.4.3",
+    "express-session": "^1.14.1",
+    "express": "^4.14.0",
+    "jade": "^1.11.0",
+    "node-rest-client": "^2.0.1",
+    "simple-oauth2": "^1.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "author": "Koen Buyens",
+  "license": "ISC"
+}

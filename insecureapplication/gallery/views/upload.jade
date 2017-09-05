@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  .container
+    h2 Upload Pictures
+    form(method="post", name="image", action="/photos", enctype="multipart/form-data")
+      fieldset
+        legend Upload an image
+        input(type="file", name="recfile")
+      .form-group
+        input.form-control(type='text', name="description", placeholder='Enter description')
+      div.actions
+        button.btn.primary(type="submit") Upload
+        button.btn.cancel(type="button") Cancel

@@ -1,0 +1,11 @@
+if(user)
+  h2 Gallery of #{gallery.username}
+  if(images)
+    table
+      each pic, i in images
+        tr
+          td
+            a(href='#{basepath}#{imagepath}#{pic._id}/view')
+              img(src='#{basepath}#{imagepath}#{pic._id}/raw' width='200px' alt='#{pic.description}')
+  if(!images || images.length === 0)
+    a(href="/photos") Upload Image

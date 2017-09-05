@@ -1,0 +1,8 @@
+extends layout
+
+block content
+  if(!user)
+    a(href="/login") Login
+    br
+    a(href="/users/register") Register
+  include gallerysnippet

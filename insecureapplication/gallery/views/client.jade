@@ -1,0 +1,9 @@
+extends layout
+
+block content
+  ul
+    if(client)
+      li clientId: #{client.clientId}
+      li name: #{client.name}
+      li secret: #{client.clientSecret}
+      //insecure: lists the client secret

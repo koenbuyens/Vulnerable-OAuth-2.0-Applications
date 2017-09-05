@@ -1,0 +1,25 @@
+extends layout
+
+block content
+  ul
+    if(founduser)
+      li Username: #{founduser.username}
+      li e-mail: #{founduser.email}
+
+      if (error && error.length > 0)
+        br
+        h4.error-msg=error
+        br
+      br
+      form(role='form', action="/users/#{founduser.username}", method="post", style='max-width: 300px;')
+        .form-group
+          input.form-control(type='text', name="username", value='#{founduser.username}')
+        .form-group
+          input.form-control(type='password', name="password", placeholder='Enter Password')
+          input.form-control(type='password', name="passwordrepeated", placeholder='Enter Password again')
+        .form-group
+          input.form-control(type='text', name="email", value='#{founduser.email}')
+        button.btn.btn-default(type='submit') Submit
+        &nbsp;
+        a(href='/')
+          button.btn.btn-primary(type="button") Cancel

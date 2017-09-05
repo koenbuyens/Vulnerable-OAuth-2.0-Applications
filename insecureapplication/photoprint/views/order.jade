@@ -1,0 +1,31 @@
+extends layout
+
+block content
+  .container
+    h2 Review your order.
+    p You will print the following photos:
+    if(selectedphotos)
+      table
+        th
+          td Pic
+          td Price
+        each pic, i in selectedphotos
+          tr
+            td
+              img(src='#{basepath}#{pic._id}/raw' width='50px' alt='#{pic.description}')
+            td
+              $#{price}
+        tr
+          td Total
+          td $#{totalprice}
+
+      form(role='form', action="/confirm", method="post", style='max-width: 600px;')
+        .form-group
+          input.form-control(type='text', name="name", placeholder='Enter your name')
+        .form-group
+          input.form-control(type='text', name="address", placeholder='Enter your address')
+        .form-group
+          input.form-control(type='text', name="creditcard", placeholder='Enter your credit card number')
+        button.btn.btn-default(type='submit') Submit
+    if(!selectedphotos || selectedphotos.length === 0)
+      No photos selected!

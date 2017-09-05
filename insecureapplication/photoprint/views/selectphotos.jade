@@ -1,0 +1,15 @@
+extends layout
+
+block content
+  .container
+    h2 Photos hosted on Gallery
+    p Select the photos below
+    if(images)
+    form(role='form', action="/order", method="post", style='max-width: 600px;')
+      each pic, i in images
+        .form-group
+          img(src='#{basepath}#{pic._id}/raw' width='200px' alt='#{pic.description}')
+          input.form-control(type='checkbox', name='#{i}', checked=true)
+      button.btn.btn-default(type='submit') Submit
+    if(!images || images.length === 0)
+      No photos found!

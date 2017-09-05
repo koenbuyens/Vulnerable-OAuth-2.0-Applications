@@ -1,0 +1,6 @@
+extends layout
+
+block content
+  p Print photos from the excellent Gallery photo-sharing website:
+    form(role='form', action="/photoprint", method="post")
+      button.btn.btn-default(type='submit') Print Pictures From Gallery

@@ -1,0 +1,16 @@
+extends layout
+
+block content
+  if(users)
+    table
+      tr
+        th nb
+        th id
+        th username
+        th email
+      each user, i in users
+        tr
+          td #{i}.
+          td #{user._id}
+          td #{user.username}
+          td #{user.email}

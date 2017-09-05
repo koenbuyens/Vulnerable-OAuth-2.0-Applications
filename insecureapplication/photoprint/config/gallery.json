@@ -1,0 +1,15 @@
+{
+  "oauth": {
+    "client": {
+      "id": "print",
+      "secret": "secret"
+    },
+    "auth": {
+      "tokenHost": "http://gallery.com:3005",
+      "tokenPath": "/oauth/token",
+      "authorizePath": "/oauth/authorize"
+    }
+  },
+  "photos": "/photos/me",
+  "scope": "view_gallery"
+}

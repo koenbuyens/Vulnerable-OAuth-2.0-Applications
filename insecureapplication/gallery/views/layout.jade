@@ -1,0 +1,25 @@
+doctype html
+html
+  head
+    title=title
+  body
+    ul
+      if(!user)
+        li
+          a(href="/login") Login
+        li
+          a(href="/users/register") Register
+      if(user)
+        li
+          a(href="/photos") Upload Image
+        li
+          a(href="/users/me") My Profile
+        li
+            a(href="/photos/me") My Gallery
+        li
+          a(href="/logout") Logout
+
+    h1 Gallery Application
+    p This application implements the following OAUth 2 roles, Authorization Server
+        and Resource Server. The server is a gallery application, such as Flickr.
+    block content

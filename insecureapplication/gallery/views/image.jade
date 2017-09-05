@@ -1,0 +1,8 @@
+extends layout
+
+block content
+  a(href='#{backURL}')
+  if(image)
+    a(href='#{basepath}#{imagepath}#{image._id}/raw')
+      img(src='#{basepath}#{imagepath}#{image._id}/raw' width='600px' alt='#{image.description}')
+    p #{image.description}

@@ -1,0 +1,26 @@
+{
+  "session": {
+    "secret":"changethistoconfigfile"
+  },
+  "mongodb": "mongodb://localhost/gallery2",
+  "token":{
+    "access":{
+      "expires_in": 3600,
+      "length" : 32
+    },
+    "authorization": {
+      "length":32
+    }
+  },
+  "scopemap": {
+    "view_gallery" : "View your photo gallery",
+    "view_profile" : "View your profile information",
+    "edit_profile" : "Edit your profile information",
+    "delete_profile" : "Delete your account",
+    "edit_picture" : "Edit your picture's metadata",
+    "delete_picture" : "Delete your picture",
+    "upload_picture" :"Upload a new picture to your gallery",
+    "list_users" : "List the users of the application",
+    "*" : "Do anything"
+  }
+}

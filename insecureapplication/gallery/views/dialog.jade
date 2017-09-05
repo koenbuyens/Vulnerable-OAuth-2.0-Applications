@@ -1,0 +1,10 @@
+p Hi #{user.username},
+p #[b() #{client.name}] requires permission to access your gallery.
+
+p Do you approve?
+form(action='/oauth/authorize/decision', method='post')
+  input(name='transaction_id', type='hidden', value='#{transactionID}')
+
+  div
+    input#allow(type='submit', value='Allow')
+    input#deny(type='submit', value='Deny', name='cancel')

@@ -1,0 +1,38 @@
+extends layout
+
+block content
+  if(clients)
+    table
+      tr
+        th Nr.
+        th clientID
+        th name
+        th clientSecret
+      each client, i in clients
+        tr
+          td #{i}.
+          td #{client.clientID}
+          td #{client.name}
+          td #{client.clientSecret}
+
+  h2 Register a new OAuth Client
+  if (error && error.length > 0)
+    br
+    h4.error-msg=error
+    br
+  br
+  form(role='form', action="/clients", method="post", style='max-width: 300px;')
+    .form-group
+      input.form-control(type='text', name="clientID", placeholder='Enter clientID')
+    .form-group
+        input.form-control(type='text', name="name", placeholder='Enter name')
+    .form-group
+      input.form-control(type='password', name="clientSecret", placeholder='Enter clientSecret')
+    .form-group
+      input.form-control(type='text', name="redirectURIs", placeholder='Enter redirectURI')
+    .form-group
+      input.form-control(type='checkbox', name="trusted", checked=(true===false ? "trusted":undefined))
+    button.btn.btn-default(type='submit') Submit
+    &nbsp;
+    a(href='/')
+      button.btn.btn-primary(type="button") Cancel
