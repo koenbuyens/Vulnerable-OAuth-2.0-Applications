@@ -6,7 +6,6 @@ var auth = require('../middlewares/auth');
 /*************************************
 * Functionality for OAuth Clients    *
 **************************************/
-//TODO: offer this via client creds grant
 //update an OAuth client; vulnerability: direct object reference
 router.put('/:clientID', auth.ensureLoggedIn, clientcontroller.updateClient);
 router.post('/:clientID', auth.ensureLoggedIn, clientcontroller.updateClient);

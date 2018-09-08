@@ -1,6 +1,6 @@
 {
   "name": "gallery",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A sample OAuth 2.0 application. It is a gallery application that has both an API as well as a web interface.",
   "main": "app.js",
   "directories": {
@@ -333,12 +333,20 @@
   },
   "scripts": {
     "start": "node app.js",
-    "test": "./node_modules/.bin/mocha --reporter spec tests/**test.js"
+    "test": "mocha --reporter spec tests/**test.js"
   },
   "keywords": [
     "insecure",
     "OAuth"
   ],
   "author": "Koen Buyens",
-  "license": "ISC"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/koenbuyens/oauth.git"
+  },
+  "bugs": {
+    "url": "https://github.com/koenbuyens/oauth/issues"
+  },
+  "homepage": "https://github.com/koenbuyens/oauth#readme"
 }
