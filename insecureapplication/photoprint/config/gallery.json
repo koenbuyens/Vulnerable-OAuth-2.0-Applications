@@ -1,7 +1,7 @@
 {
   "oauth": {
     "client": {
-      "id": "print",
+      "id": "photoprint",
       "secret": "secret"
     },
     "auth": {

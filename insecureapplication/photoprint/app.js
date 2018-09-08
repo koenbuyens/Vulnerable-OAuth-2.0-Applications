@@ -1,3 +1,4 @@
+/*jshint esversion: 6 */
 var express = require('express');
 var expressSession = require('express-session');
 var cookieParser = require('cookie-parser');
@@ -21,13 +22,13 @@ app.use(expressSession({
 
 //view engine
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.set('view engine', 'pug');
 
 //serve content from public directory
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', function(req, res){
-  res.render('index', {})
+  res.render('index', {});
 });
 
 app.post('/photoprint', function(req, res) {
@@ -84,7 +85,7 @@ app.post('/order', function(req, res){
   var totalprice = 0;
   var price = 0.10;
   var selectedphotos = [];
-  for(photo in req.body) {
+  for(var photo in req.body) {
     selectedphotos.push(req.session.images[photo]);
     totalprice += price;
   }

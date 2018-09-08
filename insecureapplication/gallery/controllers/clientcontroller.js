@@ -6,7 +6,7 @@ function updateClient(req, res) {
   var clientID = req.params.clientID;
   var name = req.body.name;
   var clientSecret = req.body.clientSecret;
-  //TODO: validate that they are URLs with complete path
+  //insecure: should validate that they are URLs with complete path
   //See: https://tools.ietf.org/html/RFC6749#3.1.2.2
   var redirectURIs = req.body.redirectURIs;
   var trusted = req.body.trusted;

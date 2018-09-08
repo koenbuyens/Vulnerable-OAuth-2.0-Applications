@@ -2,6 +2,7 @@ extends layout
 
 block content
   .container
+
     h2 Review your order.
     p You will print the following photos:
     if(selectedphotos)
@@ -10,14 +11,14 @@ block content
           td Pic
           td Price
         each pic, i in selectedphotos
-          tr
-            td
-              img(src='#{basepath}#{pic._id}/raw' width='50px' alt='#{pic.description}')
-            td
-              $#{price}
+          if(pic)
+            tr
+              td
+                img(src=basepath+pic._id+'/raw' width='50px' alt=pic.description)
+              td #{price}
         tr
           td Total
-          td $#{totalprice}
+          td #{totalprice}
 
       form(role='form', action="/confirm", method="post", style='max-width: 600px;')
         .form-group

@@ -1,3 +1,4 @@
+/*jshint esversion: 6 */
 var oauth2orize = require('oauth2orize');
 var uid = require('uid-safe');
 
@@ -147,12 +148,15 @@ function exchangecode(client, code, redirectURI, done) {
 // invoked with a `client` instance, as well as the `redirectURI` to which the
 // user will be redirected after an authorization decision is obtained.
 function authorization_validate(clientID, redirectURI, done) {
+  console.log("CLIENTID: " + clientID + " " + redirectURI);
+
   Client.findOne({clientID: clientID}, function(err, client) {
 
     if (err) {
       return done(err);
     }
     //vulnerability: redirectURI is not validated
+    console.log("CLIENT: " + client);
     if(client != null) {
       return done(null, client,redirectURI);
     }

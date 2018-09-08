@@ -13,13 +13,13 @@ var clientSchema = new Schema({
 });
 clientSchema.methods.isTrusted = function() {
   return this.trusted;
-}
+};
 
 clientSchema.statics.serializeClient = function() {
   return function(client, done) {
     return done(null, client.clientID);
-  }
-}
+  };
+};
 clientSchema.statics.deserializeClient = function(){
   return function(clientID, done) {
     Client.findOne({clientID: clientID},
@@ -30,12 +30,12 @@ clientSchema.statics.deserializeClient = function(){
         return done(null, client);
       }
     );
-  }
-}
+  };
+};
 
 clientSchema.methods.verifyClientSecretSync = function(clientSecret) {
   return (this.clientSecret === clientSecret);
-}
+};
 
 var Client = mongoose.model('Client', clientSchema);
 module.exports = Client;
