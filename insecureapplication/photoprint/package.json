@@ -18,5 +18,16 @@
     "start": "node app.js"
   },
   "author": "Koen Buyens",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/koenbuyens/oauth.git"
+  },
+  "keywords": [
+    "oauth"
+  ],
+  "bugs": {
+    "url": "https://github.com/koenbuyens/oauth/issues"
+  },
+  "homepage": "https://github.com/koenbuyens/oauth#readme"
 }

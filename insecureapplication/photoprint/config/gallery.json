@@ -5,7 +5,7 @@
       "secret": "secret"
     },
     "auth": {
-      "tokenHost": "http://gallery.com:3005",
+      "tokenHost": "http://gallery:3005",
       "tokenPath": "/oauth/token",
       "authorizePath": "/oauth/authorize"
     }
