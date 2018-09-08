@@ -1,1 +1,1 @@
-{ "indexes" : [ { "v" : 1, "key" : { "_id" : 1 }, "name" : "_id_", "ns" : "gallery2.accesstokens" }, { "v" : 1, "unique" : true, "key" : { "token" : 1 }, "name" : "token_1", "ns" : "gallery2.accesstokens", "background" : true } ] }
+{"options":{},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_","ns":"gallery2.accesstokens"},{"v":2,"unique":true,"key":{"token":1},"name":"token_1","ns":"gallery2.accesstokens","background":true}],"uuid":"f29b02662de64dbfaff47706c270b1b4"}
