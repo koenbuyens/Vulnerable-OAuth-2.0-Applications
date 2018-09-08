@@ -1,0 +1,39 @@
+extends layout
+
+block content
+  .container
+
+  table
+    each album, i in albums
+      tr
+        td
+          if(editable)
+            form(role='form', action="/albums", method="post", style='max-width: 300px;')
+              .form-group
+                input.form-control(type='text', name="name", value='#{album.name}')
+              .form-group
+                input.form-control(type='text', name="description", value='#{album.description}')
+              button.btn.btn-default(type='submit') Submit
+              &nbsp;
+              a(href='/')
+                button.btn.btn-primary(type="button") Cancel
+          else
+            h2 #{album.name}
+            p #{album.description}
+            if(album.pictures)
+              each pic in album.pictures
+                a(href='#{basepath}#{imagepath}#{pic._id}/view')
+                img(src='#{basepath}#{imagepath}#{pic._id}/raw' width='200px' alt='#{pic.description}')
+            else
+              p This album does not have pictures
+
+  if(editable)
+    form(role='form', action="/albums", method="post", style='max-width: 300px;')
+      .form-group
+        input.form-control(type='text', name="name", placeholder='Album name')
+      .form-group
+        input.form-control(type='text', name="description", placeholder='Album description')
+      button.btn.btn-default(type='submit') Submit
+      &nbsp;
+      a(href='/')
+        button.btn.btn-primary(type="button") Cancel

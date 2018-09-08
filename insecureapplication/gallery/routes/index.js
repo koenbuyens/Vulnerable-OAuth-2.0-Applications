@@ -10,10 +10,13 @@ var users = require('./users');
 var photos = require('./photos');
 var clients = require('./clients');
 var oauth = require('./oauth');
+var albums = require('./albums');
+
 router.use('/users', users);
 router.use('/photos', photos);
 router.use('/clients', clients);
 router.use('/oauth', oauth);
+router.use('/albums', albums);
 
 /**
 * TODO: move to user

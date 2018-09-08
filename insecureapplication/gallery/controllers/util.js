@@ -1,11 +1,11 @@
-var passport = require('passport')
+var passport = require('passport');
 var login = require('connect-ensure-login');
 
 /**
 * Returns an image, either as json or via jade views
 **/
 function serveImage(req, res, image) {
-  if(image) {
+  if (image) {
     //calculate file path
     var path = require('path');
     var blah2 = process.argv[1].split(path.sep);
@@ -18,7 +18,7 @@ function serveImage(req, res, image) {
     }
     //serve it
     //url is the actual file name...
-    return res.sendFile(image.url, {headers:{'Content-Type':'image/*'}, root:root})
+    return res.sendFile(image.url, { headers: { 'Content-Type': 'image/*' }, root: root });
   }
 }
 
@@ -26,7 +26,7 @@ function serveImage(req, res, image) {
 * Gets ulr based on request
 */
 function getFullURL(req) {
-  if(req == null)
+  if (req == null)
     return '';
   return req.protocol + "://" + req.get('Host');
 }
@@ -35,7 +35,7 @@ function getFullURL(req) {
 * Gets url based on gallery owner
 */
 function getImagePath(username) {
-  if(username)
+  if (username)
     return "/photos/" + username + '/';
   else {
     return image;
@@ -46,20 +46,20 @@ function getImagePath(username) {
 * Renders error page
 */
 function renderError(req, res, err, page) {
-  if(err) {
+  if (err) {
     return res.format({
-      'text/html': function() {
+      'text/html': function () {
         res.render(page, {
-          user : req.user,
+          user: req.user,
           error: err.message
         });
       },
       //if json: render a json response
-      'application/json': function() {
-        res.status(400).send({error: err.message});
+      'application/json': function () {
+        res.status(400).send({ error: err.message });
       },
       //other formats are not supported
-      'default': function() {
+      'default': function () {
         res.status(406).send("Not Acceptable");
       }
     });
@@ -70,31 +70,40 @@ function renderError(req, res, err, page) {
 * Renders message
 */
 function renderMessage(req, res, msg, status) {
-  if(!msg) {
+  if (!msg) {
     return res.status(status).end();
   }
   return res.format({
-    'text/html': function() {
+    'text/html': function () {
       res.status(status).render(page, {
-        user : req.user,
+        user: req.user,
         message: msg
       });
     },
     //if json: render a json response
-    'application/json': function() {
-      res.status(status).send({message: msg});
+    'application/json': function () {
+      res.status(status).send({ message: msg });
     },
     //other formats are not supported
-    'default': function() {
+    'default': function () {
       res.status(406).send("Not Acceptable");
     }
   });
+}
+
+function getUsername(req) {
+  var userid = req.params.username;
+  if (userid === 'me') {
+    userid = req.user.username;
+  }
+  return userid;
 }
 
 module.exports = {
   serveImage: serveImage,
   renderError: renderError,
   getFullURL: getFullURL,
-  getImagePath : getImagePath,
-  renderMessage : renderMessage
-}
+  getImagePath: getImagePath,
+  renderMessage: renderMessage,
+  getUsername: getUsername
+};

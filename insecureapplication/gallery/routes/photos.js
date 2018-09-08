@@ -9,6 +9,7 @@ var auth = require('../middlewares/auth');
 **************************************/
 //obtains the gallery of a user; very coarse grained; anonymous users cannot see pics; authenticated users can see all pics
 router.get('/:username', auth.ensureLoggedIn, photoscontroller.getGallery);
+
 //obtains the metadata of an image
 router.get('/:username/:imageid/view', photoscontroller.getImageMetaData );
 router.get('/:username/:imageid', photoscontroller.getImageMetaData );

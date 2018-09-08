@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  .container
+    h2 #{album.name}
+    p #{album.description}
+    if(album.pictures)
+        each pic in album.pictures
+            a(href='#{basepath}#{imagepath}#{pic._id}/view')
+            img(src='#{basepath}#{imagepath}#{pic._id}/raw' width='200px' alt='#{pic.description}')
+    else
+        p This album does not have pictures

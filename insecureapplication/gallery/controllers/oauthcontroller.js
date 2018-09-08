@@ -75,6 +75,37 @@ function grantcode(client, redirectURI, user, response, done) {
   });
 }
 
+/**
+ * Exchange the client id and password/secret for an access token.
+ *
+ * The callback accepts the `client`, which is exchanging the client's id and
+ * password/secret from the token request for verification. If these values are validated, the
+ * application issues an access token on behalf of the client who authorized the code.
+ */
+server.exchange(oauth2orize.exchange.clientCredentials((client, scope, done) => {
+  const token      = utils.createToken({ sub : client.id, exp : config.token.expiresIn });
+  const expiration = config.token.calculateExpirationDate();
+  // Pass in a null for user id since there is no user when using this grant type
+  db.accessTokens.save(token, expiration, null, client.id, scope)
+  .then(() => done(null, token, null, expiresIn))
+  .catch(err => done(err));
+}));
+
+/**
+ * Exchange the refresh token for an access token.
+ *
+ * The callback accepts the `client`, which is exchanging the client's id from the token
+ * request for verification.  If this value is validated, the application issues an access
+ * token on behalf of the client who authorized the code
+ */
+server.exchange(oauth2orize.exchange.refreshToken((client, refreshToken, scope, done) => {
+  db.refreshTokens.find(refreshToken)
+  .then(foundRefreshToken => validate.refreshToken(foundRefreshToken, refreshToken, client))
+  .then(foundRefreshToken => validate.generateToken(foundRefreshToken))
+  .then(token => done(null, token, null, expiresIn))
+  .catch(() => done(null, false));
+}));
+
 // Exchange authorization codes for access tokens.  The callback accepts the
 // `client`, which is exchanging `code` and any `redirectURI` from the
 // authorization request for verification.  If these values are validated, the

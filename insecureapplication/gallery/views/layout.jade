@@ -2,24 +2,27 @@ doctype html
 html
   head
     title=title
+    link(href='/stylesheets/base.css', rel='stylesheet')
+    link(href='/stylesheets/topnav.css', rel='stylesheet')
+    link(href='/stylesheets/sign-in-modules.css', rel='stylesheet')
+    link(href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css", rel='stylesheet')
+
+
   body
-    ul
-      if(!user)
-        li
-          a(href="/login") Login
-        li
-          a(href="/users/register") Register
-      if(user)
-        li
-          a(href="/photos") Upload Image
-        li
-          a(href="/users/me") My Profile
-        li
-            a(href="/photos/me") My Gallery
-        li
-          a(href="/logout") Logout
 
     h1 Gallery Application
+
+    div(class="topnav", id="myTopnav")
+      if(!user)
+        a(href="/login") Login
+        a(href="/users/register") Register
+      if(user)
+        a(href="/users/me") My Profile
+        a(href="/photos/me") My Gallery
+        a(href="/photos") Upload Image
+        a(href="/logout") Logout
+        a(href="javascript:void(0);", class="icon", onclick="myFunction()")
+
     p This application implements the following OAUth 2 roles, Authorization Server
         and Resource Server. The server is a gallery application, such as Flickr.
     block content
