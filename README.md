@@ -1,5 +1,3 @@
-***Note to the Synopsys reader: even though most of this content was created during my spare time, I created some of the material for this post when I was conducting JavaScript-related research during working hours. For those parts, I have written permission from the research managers (Chris and Ksenia) as well as the marketing specialist (Liz) to publish this research both on my GitHub account.***
-
 # TL;DR
 We show how to use OAuth 2.0 securely when using
 - a [Classic Web Application](#classic-web-application-authorization-code-grant-flow),
