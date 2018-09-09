@@ -7,10 +7,10 @@ To run the applications.
 First edit your hosts file to include photoprint and gallery.
 
 ```bash
-127.0.0.1           gallery photoprint localhost
+127.0.0.1           gallery photoprint attacker localhost
 ```
 
-First import the mongodb database
+Second, import the mongodb database
 
 ```bash
 cd gallery/mongodbdata
@@ -30,9 +30,9 @@ cd attacker
 npm start &
 ```
 
-Then go to [http://localhost:3000](http://localhost:3000) to print photos hosted by gallery.
+Then go to [http://photoprint:3000](http://photoprint:3000) to print photos hosted by gallery.
 Hint: username is koen and password is password.
 
-You can also browse the gallery by surfing to [http://localhost:3005](http://localhost:3005).
+You can also browse the gallery by surfing to [http://gallery:3005](http://gallery:3005).
 
-You can test out various OAuth2-related attacks by surfing to [http://localhost:1337](http://localhost:1337).
+You can test out various OAuth2-related attacks by surfing to [http://attacker:1337](http://attacker:1337).
