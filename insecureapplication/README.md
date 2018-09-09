@@ -7,7 +7,7 @@ To run the applications.
 First edit your hosts file to include photoprint and gallery.
 
 ```bash
-127.0.0.1           gallery photoprint localhost
+127.0.0.1           gallery photoprint attacker localhost
 ```
 
 First import the mongodb database
