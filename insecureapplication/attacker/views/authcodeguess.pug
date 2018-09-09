@@ -1,0 +1,8 @@
+extends layout
+
+block content
+  .container
+    h2 Authorization Code
+    p I guessed the following valid authorization codes:
+      each code in codes
+        li='code: '+ code.code + ", token: " + code.token

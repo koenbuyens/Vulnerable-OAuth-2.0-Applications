@@ -123,6 +123,9 @@ function exchangecode(client, code, redirectURI, done) {
     if (err) {
       return done(new oauth2orize.TokenError("Error while accessing the token database.", "server_error"));
     }
+    if(authCode == null) {
+      return done(new oauth2orize.AuthorizationError("Invalid Authorization Code.", "access_denied"));
+    } 
 
     //vulnerability: weak access tokens
     var token = Math.floor(Math.random() * (100000-1) +1);

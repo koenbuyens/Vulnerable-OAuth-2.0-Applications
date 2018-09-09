@@ -320,8 +320,7 @@ Vivian authenticates to the ```photoprint``` website and clicks the 'Print Pictu
 After Vivian clicked the print button, she is redirected by the Client (photoprint) to the Authorization Endpoint on the Authorization Server. That redirection request is as follows.
 
 ```http
-GET /oauth/authorize?redirect_uri=http%3A%2F%2Fphotoprint%3A3000%2Fcallback&scope=view_gallery&response_type=code&
-client_id=print HTTP/1.1
+GET /oauth/authorize?redirect_uri=http%3A%2F%2Fphotoprint%3A3000%2Fcallback&scope=view_gallery&response_type=code&client_id=photoprint HTTP/1.1
 Host: gallery:3005
 Connection: keep-alive
 Referer: http://photoprint:3000/
@@ -370,7 +369,7 @@ Host: gallery:3005
 Connection: keep-alive
 Content-Length: 23
 Origin: http://gallery:3005
-Referer: http://gallery:3005/oauth/authorize?redirect_uri=http%3A%2F%2Fphotoprint%3A3000%2Fcallback&scope=view_gallery&response_type=code&client_id=print
+Referer: http://gallery:3005/oauth/authorize?redirect_uri=http%3A%2F%2Fphotoprint%3A3000%2Fcallback&scope=view_gallery&response_type=code&client_id=photoprint
 
  'transaction_id=ATkQA32i'
 ```
@@ -405,8 +404,7 @@ The server redirects the user back to the `photoprint` application (using the or
 GET /callback?code=92890 HTTP/1.1
 Host: photoprint:3000
 Connection: keep-alive
-Referer: http://gallery:3005/oauth/authorize?redirect_uri=http%3A%2F%2Fphotoprint%3A3000%2Fcallback&
-scope=view_gallery&response_type=code&client_id=print
+Referer: http://gallery:3005/oauth/authorize?redirect_uri=http%3A%2F%2Fphotoprint%3A3000%2Fcallback&scope=view_gallery&response_type=code&client_id=photoprint
 ```
 
 #### Step 5:  Client Sends Authorization Code And Its Credentials To The Token Endpoint
@@ -417,14 +415,11 @@ The `photoprint` application then exchanges the *Authorization Code* and its *OA
 POST /oauth/token HTTP/1.1
 Accept: application/json
 host: gallery:3005
-content-type:
-application/x-www-form-urlencoded
+content-type: application/x-www-form-urlencoded
 content-length: 147
 Connection: close
-code=92890&redirect_uri=http%3A%2F%
-2Fphotoprint%3A3000%2Fcallback&
-grant_type=authorization_code&client_id=print
-&client_secret=secret
+
+code=92890&redirect_uri=http%3A%2F%2Fphotoprint%3A3000%2Fcallback&grant_type=authorization_code&client_id=photoprint&client_secret=secret
 ```
 
 #### Step 6: Issue An Access Token At The Token Endpoint
@@ -504,19 +499,28 @@ If the authorization server does not validate that the redirect URI belongs to t
 
 To remediate this, validate whether the redirect_uri parameter is one the client provided during the registration process.
 
-To validate this as a tester, change the value of the redirect_uri parameter to one you control.
+To validate this as a tester, do the following:
 
-```html
-http://gallery:3005/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Fattacker%3A1337%2Fcallback&scope=email&client_id=photoprint
-```
+1. Capture the URL that the OAuth 2.0 client uses to talk with the authorization endpoint. `http://gallery:3005/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Fphotoprint%3A3000%2Fcallback&scope=view_gallery&client_id=photoprint`
+2. Change the value of the redirect_uri parameter to one you control.  `http://gallery:3005/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Fattacker%3A1337%2Fcallback&scope=view_gallery&client_id=photoprint`
 
 #### Authorization Endpoint: Generate Strong Authorization Codes
 
-If the tokens are weak, an attacker may be able to guess them at the token endpoint. This is especially true if the client secret is compromised, not used, or not validated.
+If the tokens are weak, an attacker may be able to guess them at the token endpoint. This is especially true if the client secret is compromised, not used, or not validated. ![Attacker correctly guesses the authorization codes by performing a bruteforce attack.](./pics/weakauthorizationcodes.gif)
 
 To remediate this, generate authorization codes with a length of at least 128 bit using a secure pseudo-random number generator that is seeded properly. Most mature OAuth 2.0 frameworks implement this correctly.
 
 To validate this as a tester, analyze the entropy of multiple captured authorization codes.
+
+1. Configure BurpSuite and intercept the request that the OAuth 2.0 client sends to the OAuth 2.0 Authorization Endpoint.
+
+2. Send that request to BurpSuite Sequencer. ![Send requests to sequencer.](./pics/weakauthorizationcodes_burpsequencer1.png)
+
+3. Select the request in sequencer and define a custom token location. Select the location of the token. ![Select token location in sequencer.](./pics/weakauthorizationcodes_burpsequencer2.png)
+
+4. Select 'live capture' and subsequently click 'Analyze now'. The result will tell you whether the tokens have sufficient entropy.  ![Select token location in sequencer.](./pics/weakauthorizationcodes_burpsequencer3.png)
+
+Alternatively, bruteforce the tokens if you have a compromised client secret or if the client secret is not necessary.
 
 #### Authorization Endpoint: Expire Unused Authorization Codes
 
