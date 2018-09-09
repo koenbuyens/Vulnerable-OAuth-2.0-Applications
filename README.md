@@ -596,16 +596,16 @@ To validate this as a tester, analyze the entropy of multiple captured tokens. N
 1. Identitify the location of the token endpoint. Most OAuth servers with openID/Connect support publish the locations of their endpoints at `https://[base-server-url]/.well-known/openid-configuration` or at `https://[base-server-url]/.well-known/oauth-authorization-server`. If such endpoint is not available, the token endpoint is usually hosted at token. ![Well known endpoints publish the token endpoint.](./pics/wellknown1.png).
 2. Make requests to the token endpoint with valid authorization codes or refresh tokens and capture the resulting access tokens. Note that the client ID and secret are typically required. They may be in the body or as a Basic Authorization header.
 
-```http
-POST /token HTTP/1.1
-host: gallery:3005
-Content-Length: 133
-Connection: close
+    ```http
+    POST /token HTTP/1.1
+    host: gallery:3005
+    Content-Length: 133
+    Connection: close
 
-code=9&redirect_uri=http%3A%2F%2Fphotoprint%3A3000%2Fcallback&grant_type=authorization_code&client_id=maliciousclient&client_secret=secret
-```
+    code=9&redirect_uri=http%3A%2F%2Fphotoprint%3A3000%2Fcallback&grant_type=authorization_code&client_id=maliciousclient&client_secret=secret
+    ```
 
-1. Analyze the entropy of these tokens using the same approach as described in weak authorization codes.
+3. Analyze the entropy of these tokens using the same approach as described in weak authorization codes.
 
 Alternatively, bruteforce the tokens at the resource server if you have a compromised client secret or if the client secret is not necessary.
 
