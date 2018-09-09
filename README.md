@@ -487,7 +487,6 @@ passport.use(new BearerStrategy(
 ### Print
 
 Incidentally, the `photoprint` web application also uses the MEAN stack. The print application is a fairly simple application.
-
 TODO implement obtaining a profile, authenticating, and storing orders (to illustrate OpenId connect).
 
 ## Security Considerations
@@ -496,20 +495,82 @@ In this section, we present common security mistakes made when designing/impleme
 
 ### Gallery Authorization Server
 
-#### Token Endpoint: Bind the Authorization Code to the RedirectURI
+#### Authorization Endpoint: Validate the RedirectURI Parameter
 
-Read the previous section if you are not familiar with the Authorization Code Grant. Within that flow, the *Client* exchanges an earlier obtained *Authorization Code* for an *Access Token* at the token endpoint of the authorization server. The server sends the access token to the URI that was specified as a parameter in the request (named: `redirect_uri`). The server should validate that this `redirect_uri` is the same as the `redirect_uri` that was used to obtain the *Authorization Code*. If this validation is not done, then an attacker might be able to replay an original request (but modify the *redirect_uri*), obtain an authorization code, and subsequently an access token to access the user's resources.
+If the authorization server does not validate that the redirect URI belongs to the client, it is susceptible to two types of attacks:
 
-![Attacker steals a valid authorization code from the victim.](./pics/openredirect_stealauthzcode.gif)
+- Open Redirect. ![Attacker redirects the victim the victim to a random site.](./pics/openredirect.gif)
+- Stealing of Authorization Codes. ![Attacker steals a valid authorization code from the victim.](./pics/openredirect_stealauthzcode.gif)
 
-![Attacker redirects the victim the victim to a random site.](./pics/openredirect.gif)
+To remediate this, validate whether the redirect_uri parameter is one the client provided during the registration process.
 
-To validate this as a tester, change the value of the redirect_uri parameter to one you control:
+To validate this as a tester, change the value of the redirect_uri parameter to one you control.
 
 ```html
 http://gallery:3005/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Fattacker%3A1337%2Fcallback&scope=email&client_id=photoprint
 ```
 
+#### Authorization Endpoint: Generate Strong Authorization Codes
+
+If the tokens are weak, an attacker may be able to guess them at the token endpoint. This is especially true if the client secret is compromised, not used, or not validated.
+
+To remediate this, generate authorization codes with a length of at least 128 bit using a secure pseudo-random number generator that is seeded properly. Most mature OAuth 2.0 frameworks implement this correctly.
+
+To validate this as a tester, analyze the entropy of multiple captured authorization codes.
+
+#### Authorization Endpoint: Expire Unused Authorization Codes
+
+TODO
+
+#### Token Endpoint: Invalidate Authorization Codes After Use
+
+TODO
+
+#### Token Endpoint: Bind the Authorization Code to the Client
+
+TODO
+
+#### Token Endpoint: Expire Access and Refresh Tokens
+
+TODO
+
+#### Token Endpoint: Generate Strong Handle-Based Access and Refresh Tokens
+
+TODO
+
+#### Token Endpoint: Store Handle-Based Access and Refresh Tokens Securely
+
+TODO
+
+#### Token Endpoint: Limit Token Scope
+
+TODO
+
+#### Token Endpoint: Store Client Secrets Securely
+
+TODO
+
+#### Token Endpoint: Bind Refresh Token to Client
+
+TODO
+
+#### Resource Server: Reject Revoked Tokens
+
+TODO
+
+#### Implement Rate-Limiting
+
+TODO
+
+### Photoprint OAuth 2.0 Client
+
+#### Store Client Secrets Securely
+
+TODO
+
+#### Store Access and Refresh Tokens Securely
+
+TODO
 
 # Mobile Application: Authorization Code Grant with PKCE
 
