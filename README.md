@@ -498,7 +498,7 @@ In this section, we present common security mistakes made when designing/impleme
 
 Read Section TODO if you are not familiar with the Authorization Code Grant. Within that flow, the *Client* exchanges an earlier obtained *Authorization Code* for an *Access Token* at the token endpoint of the authorization server. The server sends the access token to the URI that was specified as a parameter in the request (named: `redirect_uri`). The server should validate that this `redirect_uri` is the same as the `redirect_uri` that was used to obtain the *Authorization Code*. If this validation is not done, then an attacker might be able to replay an original request (but modify the *redirect_uri*) and obtain an access token to access the user's resources.
 
-[Attacker steals the authorization code.](./pics/openredirect_stealauthzcode.gif)
+![Attacker steals the authorization code.](./pics/openredirect_stealauthzcode.gif)
 
 To validate this as a tester, do the following:
 TODO
