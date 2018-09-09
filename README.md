@@ -525,7 +525,7 @@ To validate this as a tester, do the following:
 
 ##### Authorization Endpoint: Generate Strong Authorization Codes
 
-If the tokens are weak, an attacker may be able to guess them at the token endpoint. This is especially true if the client secret is compromised, not used, or not validated. ![Attacker correctly guesses the authorization codes by performing a bruteforce attack.](./pics/weakauthorizationcodes.gif)
+If the authorization codes are weak, an attacker may be able to guess them at the token endpoint. This is especially true if the client secret is compromised, not used, or not validated. ![Attacker correctly guesses the authorization codes by performing a bruteforce attack.](./pics/weakauthorizationcodes.gif)
 
 To remediate this, generate authorization codes with a length of at least 128 bit using a secure pseudo-random number generator that is seeded properly. Most mature OAuth 2.0 frameworks implement this correctly.
 
@@ -587,7 +587,29 @@ code=9&redirect_uri=http%3A%2F%2Fphotoprint%3A3000%2Fcallback&grant_type=authori
 
 ##### Token Endpoint: Generate Strong Handle-Based Access and Refresh Tokens
 
-TODO
+If the tokens are weak, an attacker may be able to guess them at the resource server or the token endpoint. ![Attacker correctly guesses the access tokens by performing a bruteforce attack.](./pics/weakaccesstokens.gif)
+
+To remediate this, generate tokens with a length of at least 128 bit using a secure pseudo-random number generator that is seeded properly. Most mature OAuth 2.0 frameworks implement this correctly.
+
+To validate this as a tester, analyze the entropy of multiple captured tokens. Note that it is hard to capture tokens for clients that are classic web applications as these tokens are communicated via a back-channel.
+
+1. Identitify the location of the token endpoint. Most OAuth servers with openID/Connect support publish the locations of their endpoints at `https://[base-server-url]/.well-known/openid-configuration` or at `https://[base-server-url]/.well-known/oauth-authorization-server`. ![Well known endpoints publish the token endpoint.](./pics/wellknown1.png). If such endpoint is not available, the token endpoint is usually hosted at token.
+2. Make requests to the token endpoint with valid authorization codes or refresh tokens and capture the resulting access tokens. Note that the client ID and secret are typically required. They may be in the body or as a Basic Authorization header.
+
+```http
+POST /token HTTP/1.1
+host: gallery:3005
+Content-Length: 133
+Connection: close
+
+code=9&redirect_uri=http%3A%2F%2Fphotoprint%3A3000%2Fcallback&grant_type=authorization_code&client_id=maliciousclient&client_secret=secret
+```
+
+1. Analyze the entropy of these tokens using the same approach as described in weak authorization codes.
+
+Alternatively, bruteforce the tokens at the resource server if you have a compromised client secret or if the client secret is not necessary.
+
+1. 
 
 ##### Token Endpoint: Store Handle-Based Access and Refresh Tokens Securely
 

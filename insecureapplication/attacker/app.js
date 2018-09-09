@@ -117,5 +117,5 @@ app.post('/exchangewithothercreds', async function(req, res){
 });
 
 app.listen(1337, function () {
-  console.log('Attacker Application listening on http://'+this.address().address +':'+this.address().port);
+  console.log('Attacker Application listening on '+this.address().address +':'+this.address().port);
 });

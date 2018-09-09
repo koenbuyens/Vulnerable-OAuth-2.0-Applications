@@ -258,6 +258,51 @@ function tokeninfo(req, res) {
   });
 }
 
+/**
+ * See  https://connect2id.com/products/server/docs/api/discovery#oauth-config
+ * @param {*} req request
+ * @param {*} res response
+ * @return {*} configuration
+ */
+function wellknown(req, res) {
+  host = req.headers.host;
+  protocol = req.protocol;
+  fullhost = protocol + '://' + host;
+  config = {
+    'issuer': fullhost, // insecure: JSON injection
+    'token_endpoint': fullhost+'/token',
+    'introspection_endpoint': fullhost+'/token/introspect',
+    'revocation_endpoint': '',
+    'authorization_endpoint': fullhost+'/login',
+    'userinfo_endpoint': '',
+    'registration_endpoint': '',
+    'jwks_uri': '',
+    'scopes_supported': ['profile', 'view_gallery'],
+    'response_types_supported': ['code', 'token', 'code token'],
+    'response_modes_supported': ['query', 'form_post'],
+    'grant_types_supported': ['authorization_code', 'refresh_token'],
+    'code_challenge_methods_supported': [],
+    'acr_values_supported': [],
+    'subject_types_supported': ['public'],
+    'token_endpoint_auth_methods_supported': [
+      'client_secret_basic',
+      'client_secret_post',
+    ],
+    'token_endpoint_auth_signing_alg_values_supported': [],
+    'id_token_signing_alg_values_supported': [],
+    'userinfo_signing_alg_values_supported': [],
+    'display_values_supported': ['page'],
+    'claim_types_supported': ['normal'],
+    'claims_supported': ['sub', 'iss', 'name'],
+    'ui_locales_supported': ['en'],
+    'claims_parameter_supported': true,
+    'request_parameter_supported': false,
+    'request_uri_parameter_supported': false,
+    'require_request_uri_registration': false,
+  };
+  return res.json(config);
+}
+
 exports = module.exports = {
   decision: server.decision(decision),
   renderdialog: renderdialog,
@@ -268,4 +313,5 @@ exports = module.exports = {
   token: server.token(),
   errorHandler: server.errorHandler(),
   tokeninfo: tokeninfo,
+  wellknown: wellknown,
 };

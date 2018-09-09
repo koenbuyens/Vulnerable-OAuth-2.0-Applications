@@ -2,7 +2,12 @@
   "session": {
     "secret":"changethistoconfigfile"
   },
-  "mongodb": "mongodb://localhost/gallery2",
+  "mongodb": {
+    "url": "mongodb://localhost/gallery2",
+    "options": {
+      "useMongoClient": true
+    }
+  },
   "token":{
     "access":{
       "expires_in": 3600,

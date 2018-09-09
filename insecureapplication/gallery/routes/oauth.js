@@ -51,6 +51,22 @@ router.post('/token',
 
 // Mimicking google's token info endpoint from
 // https://developers.google.com/accounts/docs/OAuth2UserAgent#validatetoken
-router.get('/tokeninfo', oauthcontroller.tokeninfo);
+router.get('/token/introspect', oauthcontroller.tokeninfo);
+
+/**
+ * OAuth well known authorization server
+ */
+router.get(
+    '/.well-known/oauth-authorization-server',
+    oauthcontroller.wellknown
+);
+
+/**
+ * OAuth well known openid configuration
+ */
+router.get(
+    '/.well-known/openid-configuration',
+    oauthcontroller.wellknown
+);
 
 module.exports = router;

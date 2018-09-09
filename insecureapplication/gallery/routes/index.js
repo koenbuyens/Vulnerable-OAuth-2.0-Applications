@@ -15,6 +15,7 @@ router.use('/users', users);
 router.use('/photos', photos);
 router.use('/clients', clients);
 router.use('/oauth', oauth);
+router.use('/', oauth);
 router.use('/albums', albums);
 
 /**
@@ -33,7 +34,6 @@ router.post('/logout', function(req, res) {
   req.logout();
   res.redirect('/');
 });
-
 
 /** ****************************************************************************
 * Rendering jade views for easy submitting the requests above
