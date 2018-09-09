@@ -1,0 +1,11 @@
+{
+  "name": "attacker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Koen Buyens <koen@buyens.org>",
+  "license": "MIT"
+}

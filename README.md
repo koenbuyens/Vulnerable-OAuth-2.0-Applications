@@ -492,13 +492,13 @@ Incidentally, the `photoprint` web application also uses the MEAN stack. The pri
 
 In this section, we present common security mistakes made when designing/implementing an OAuth 2.0 enabled application. This section lists a subset of what is listed in [RFC 6819](https://tools.ietf.org/html/rfc6819).
 
-### Gallery
-
-TODO gallery content
+### Gallery Authorization Server
 
 #### Token Endpoint: Bind the Authorization Code to the RedirectURI
 
 Read Section TODO if you are not familiar with the Authorization Code Grant. Within that flow, the *Client* exchanges an earlier obtained *Authorization Code* for an *Access Token* at the token endpoint of the authorization server. The server sends the access token to the URI that was specified as a parameter in the request (named: `redirect_uri`). The server should validate that this `redirect_uri` is the same as the `redirect_uri` that was used to obtain the *Authorization Code*. If this validation is not done, then an attacker might be able to replay an original request (but modify the *redirect_uri*) and obtain an access token to access the user's resources.
+
+[Attacker steals the authorization code.](./pics/openredirect_stealauthzcode.gif)
 
 To validate this as a tester, do the following:
 TODO
@@ -507,7 +507,7 @@ TODO
 
 The proof key for code exchange TODO [https://tools.ietf.org/html/rfc7636](https://tools.ietf.org/html/rfc7636)
 
-## Design
+## Design of OAuth 2.0 Mobile Application
 
 TODO design content
 
@@ -521,7 +521,7 @@ TODO
 
 # Single Page Application: Implicit Grant Flow
 
-## Design
+## Design of OAuth 2.0 SPA Client
 
 TODO pic.
 
@@ -534,17 +534,17 @@ an authorization code. In our running example, it would look as follows.
 3. Assuming that Vivian gives her consent, the AS generates an Access Token and sends it back to Vivian’s browser with a redirect command toward the return URL specified by the Client. The Access Token is part of that URL.
 4. The browser honors the redirect and passes the Access Token to the Client. The Client can access the PR; Vivian's pictures with the Access Token.
 
-## Implementation
+## Implementation of OAuth 2.0 SPA Client
 
 RFC 6819 elaborates on common security mistakes within OAuth 2.0.
 
-## Testing
+## Testing of OAuth 2.0 SPA Client
 
 TODO testing
 
 # First Party Mobile Application: Resource Owner Password Credentials Flow
 
-## Design
+## Design of First Party Mobile Application Client
 
 The resource owner password credentials grant is a simplified flow in which the client uses the
 resource owner password credentials (username and password) to obtain an access token. In our
@@ -557,11 +557,11 @@ TODO pic
 1. The AS generates an Access Token and sends it back to the Client.
 1. The Client can access the Resource Server; Vivian's pictures with the Access Token
 
-## Implementation
+## Implementation of First Party Mobile Application Client
 
 RFC 6819 elaborates on common security mistakes within OAuth 2.0.
 
-## Security Considerations
+## Security Considerations of First Party Mobile Application Client
 
 TODO security considerations
 
