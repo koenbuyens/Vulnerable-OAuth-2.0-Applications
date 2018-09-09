@@ -501,7 +501,7 @@ To remediate this, validate whether the redirect_uri parameter is one the client
 
 To validate this as a tester, do the following:
 
-1. Capture the URL that the OAuth 2.0 client uses to talk with the authorization endpoint. `http://gallery:3005/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Fphotoprint%3A3000%2Fcallback&scope=view_gallery&client_id=photoprint`
+1. Capture the URL that the OAuth 2.0 client uses to talk with the authorization endpoint.  `http://gallery:3005/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Fphotoprint%3A3000%2Fcallback&scope=view_gallery&client_id=photoprint`
 2. Change the value of the redirect_uri parameter to one you control.  `http://gallery:3005/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Fattacker%3A1337%2Fcallback&scope=view_gallery&client_id=photoprint`
 
 #### Authorization Endpoint: Generate Strong Authorization Codes
@@ -514,21 +514,40 @@ To validate this as a tester, analyze the entropy of multiple captured authoriza
 
 1. Configure BurpSuite and intercept the request that the OAuth 2.0 client sends to the OAuth 2.0 Authorization Endpoint.
 
-2. Send that request to BurpSuite Sequencer. ![Send requests to sequencer.](./pics/weakauthorizationcodes_burpsequencer1.png)
+2. Send that request to BurpSuite Sequencer.  ![Send requests to sequencer.](./pics/weakauthorizationcodes_burpsequencer1.png)
 
-3. Select the request in sequencer and define a custom token location. Select the location of the token. ![Select token location in sequencer.](./pics/weakauthorizationcodes_burpsequencer2.png)
+3. Select the request in sequencer and define a custom token location. Select the location of the token.  ![Select token location in sequencer.](./pics/weakauthorizationcodes_burpsequencer2.png)
 
-4. Select 'live capture' and subsequently click 'Analyze now'. The result will tell you whether the tokens have sufficient entropy.  ![Select token location in sequencer.](./pics/weakauthorizationcodes_burpsequencer3.png)
+4. Select 'live capture' and subsequently click 'Analyze now'. The result tells whether the tokens have sufficient entropy. ![Select token location in sequencer.](./pics/weakauthorizationcodes_burpsequencer3.png)
 
-Alternatively, bruteforce the tokens if you have a compromised client secret or if the client secret is not necessary.
+Alternatively, bruteforce the tokens if you have a compromised client secret or if the client secret is not necessary. This is the approach the attacker took.
 
 #### Authorization Endpoint: Expire Unused Authorization Codes
 
-TODO
+Expiring unused authorization codes limits the window in which an attacker can use captured or guessed authorization codes.
+
+To remediate this, expire authorization codes 15-30 minutes after they have been generated.
+
+To validate this as a tester, generate an authorization code but only redeem it after 31 minutes.
+
+1. Configure BurpSuite and intercept the request that the OAuth 2.0 client sends to the OAuth 2.0 Authorization Endpoint.
+2. Send that request to the BurpSuite Plugin 'Session Timeout Test'.  ![Send the request to session timeout test.](./pics/expiredauthorizationcodes_burptimeout1.png)
+3. Configure the plugin by selecting a matching string that indicates the authorization code is invalid (typically 'Unauthorized') and a mininmum timeout of 31 minutes.  ![Send the request to session timeout test.](./pics/expiredauthorizationcodes_burptimeout2.png)
+4. Observe the result.
 
 #### Token Endpoint: Invalidate Authorization Codes After Use
 
-TODO
+Invalidating used authorization codes limits the window in which an attacker can use captured or guessed authorization codes.
+
+To remediate this, follow the OAuth 2.0 specification and delete authorization codes from the database after they have been used.
+
+To validate this as a tester, generate an authorization code and redeem it twice.
+
+1. Configure BurpSuite and intercept the request that the OAuth 2.0 client sends to the OAuth 2.0 Authorization Endpoint.
+
+2. Send that request to BurpSuite Repeater.
+
+3. Repeat that request and validate whether it fails.
 
 #### Token Endpoint: Bind the Authorization Code to the Client
 
@@ -559,6 +578,10 @@ TODO
 TODO
 
 #### Resource Server: Reject Revoked Tokens
+
+TODO
+
+#### Resource Server: Validate Token Scope
 
 TODO
 
