@@ -602,7 +602,8 @@ To validate this as a tester, analyze the entropy of multiple captured tokens. N
     Content-Length: 133
     Connection: close
 
-    code=9&redirect_uri=http%3A%2F%2Fphotoprint%3A3000%2Fcallback&grant_type=authorization_code&client_id=maliciousclient&client_secret=secret
+    code=9&redirect_uri=http%3A%2F%2Fphotoprint%3A3000%2Fcallback&
+    grant_type=authorization_code&client_id=maliciousclient&client_secret=secret
     ```
 
 3. Analyze the entropy of these tokens using the same approach as described in weak authorization codes.
