@@ -587,13 +587,13 @@ code=9&redirect_uri=http%3A%2F%2Fphotoprint%3A3000%2Fcallback&grant_type=authori
 
 ##### Token Endpoint: Generate Strong Handle-Based Access and Refresh Tokens
 
-If the tokens are weak, an attacker may be able to guess them at the resource server or the token endpoint. ![Attacker correctly guesses the access tokens by performing a bruteforce attack.](./pics/weakaccesstokens.gif)
+If the tokens are weak, an attacker may be able to guess them at the resource server or the token endpoint. <!-- ![Attacker correctly guesses the access tokens by performing a bruteforce attack.](./pics/weakaccesstokens.gif) -->
 
 To remediate this, generate tokens with a length of at least 128 bit using a secure pseudo-random number generator that is seeded properly. Most mature OAuth 2.0 frameworks implement this correctly.
 
 To validate this as a tester, analyze the entropy of multiple captured tokens. Note that it is hard to capture tokens for clients that are classic web applications as these tokens are communicated via a back-channel.
 
-1. Identitify the location of the token endpoint. Most OAuth servers with openID/Connect support publish the locations of their endpoints at `https://[base-server-url]/.well-known/openid-configuration` or at `https://[base-server-url]/.well-known/oauth-authorization-server`. ![Well known endpoints publish the token endpoint.](./pics/wellknown1.png). If such endpoint is not available, the token endpoint is usually hosted at token.
+1. Identitify the location of the token endpoint. Most OAuth servers with openID/Connect support publish the locations of their endpoints at `https://[base-server-url]/.well-known/openid-configuration` or at `https://[base-server-url]/.well-known/oauth-authorization-server`. If such endpoint is not available, the token endpoint is usually hosted at token. ![Well known endpoints publish the token endpoint.](./pics/wellknown1.png).
 2. Make requests to the token endpoint with valid authorization codes or refresh tokens and capture the resulting access tokens. Note that the client ID and secret are typically required. They may be in the body or as a Basic Authorization header.
 
 ```http
@@ -609,11 +609,9 @@ code=9&redirect_uri=http%3A%2F%2Fphotoprint%3A3000%2Fcallback&grant_type=authori
 
 Alternatively, bruteforce the tokens at the resource server if you have a compromised client secret or if the client secret is not necessary.
 
-1. 
-
 ##### Token Endpoint: Store Handle-Based Access and Refresh Tokens Securely
 
-TODO
+If the handle-based tokens are stored as plain text, an attacker may be able to obtain them from the database at the resource server or the token endpoint (e.g. .
 
 ##### Token Endpoint: Expire Access and Refresh Tokens
 
