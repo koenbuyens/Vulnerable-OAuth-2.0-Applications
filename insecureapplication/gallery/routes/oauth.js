@@ -1,13 +1,12 @@
-var express = require('express');
-var passport = require('passport');
-var login = require('connect-ensure-login');
-var helmet = require('helmet');
-var oauthcontroller = require('../controllers/oauthcontroller')
-var auth = require('../middlewares/auth');
+const express = require('express');
+const login = require('connect-ensure-login');
+const helmet = require('helmet');
+const oauthcontroller = require('../controllers/oauthcontroller');
+const auth = require('../middlewares/auth');
 
-var router = express.Router();
+let router = new express.Router();
 
-//routes are listed at the end
+// routes are listed at the end
 // user authorization endpoint
 //
 // `authorization` middleware accepts a `validate` callback which is
@@ -16,13 +15,13 @@ var router = express.Router();
 // This middleware simply initializes a new authorization transaction.  It is
 // the application's responsibility to authenticate the user and render a dialog
 // to obtain their approval (displaying details about the client requesting
-// authorization).  We accomplish that here by routing through `ensureLoggedIn()`
+// authorization).  We accomplish that here by routing through ensureLoggedIn()
 // first, and rendering the `dialog` view.
 router.get('/authorize',
-  login.ensureLoggedIn(),
-  oauthcontroller.authorization,
-  oauthcontroller.renderdialog
-)
+    login.ensureLoggedIn(),
+    oauthcontroller.authorization,
+    oauthcontroller.renderdialog
+);
 // user decision endpoint
 //
 // `decision` middleware processes a user's decision to allow or deny access
@@ -30,10 +29,10 @@ router.get('/authorize',
 // client, the grant middleware configured will be invoked to send
 // a response.
 router.post('/authorize/decision',
-  login.ensureLoggedIn(),
-  oauthcontroller.decision,
-  //secure: avoid caching of the token responses
-  helmet.noCache()
+    login.ensureLoggedIn(),
+    oauthcontroller.decision,
+    // secure: avoid caching of the token responses
+    helmet.noCache()
 );
 // token endpoint
 //
@@ -42,12 +41,16 @@ router.post('/authorize/decision',
 // exchange middleware will be invoked to handle the request.  Clients must
 // authenticate when making requests to this endpoint.
 router.post('/token',
-  //client is authenticated with passport; after that token is exchanged
-  auth.isClientAuthenticated,
-  oauthcontroller.token,
-  oauthcontroller.errorHandler,
-  //secure: avoid caching of the token response
-  helmet.noCache()
-)
+    // client is authenticated with passport; after that token is exchanged
+    auth.isClientAuthenticated,
+    oauthcontroller.token,
+    oauthcontroller.errorHandler,
+    // secure: avoid caching of the token response
+    helmet.noCache()
+);
+
+// Mimicking google's token info endpoint from
+// https://developers.google.com/accounts/docs/OAuth2UserAgent#validatetoken
+router.get('/tokeninfo', oauthcontroller.tokeninfo);
 
 module.exports = router;

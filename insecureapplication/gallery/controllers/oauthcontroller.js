@@ -1,16 +1,12 @@
-/*jshint esversion: 6 */
-var oauth2orize = require('oauth2orize');
-var uid = require('uid-safe');
+const oauth2orize = require('oauth2orize');
 
-var Client = require('../models/client');
-var AuthorizationCode = require('../models/authorizationcode');
-var AccessToken = require('../models/accesstoken');
-
-var util = require('./util');
-var config = require('../config/config');
+const Client = require('../models/client');
+const User = require('../models/user');
+const AuthorizationCode = require('../models/authorizationcode');
+const AccessToken = require('../models/accesstoken');
 
 // create OAuth 2.0 server
-var server = oauth2orize.createServer();
+let server = oauth2orize.createServer();
 // Register serialialization and deserialization functions.
 // serialialization and deserialization functions.
 //
@@ -28,24 +24,34 @@ server.serializeClient(Client.serializeClient());
 server.deserializeClient(Client.deserializeClient());
 
 // Register supported grant types.
-//secure: scope is used
-//More info: https://tools.ietf.org/html/rfc6819#section-5.1.5.1
-//when not used: everything is allowed
+// secure: scope is used
+// More info: https://tools.ietf.org/html/rfc6819#section-5.1.5.1
+// when not used: everything is allowed
 server.grant(oauth2orize.grant.code({scopeSeperator: [' ', ',']}, grantcode));
-//alternative
-//server.grant(oauth2orize.grant.authorizationCode({scopeSeperator: [' ', ',']}, grantcode));
+// alternative
+// server.grant(
+//    oauth2orize.grant.authorizationCode(
+//        {scopeSeperator: [' ', ',']}, grantcode
+//    )
+// );
 
-//insecure: scope not used
-//server.grant(oauth2orize.grant.code(grantcode));
+// insecure: scope not used
+// server.grant(oauth2orize.grant.code(grantcode));
 
 // Exchange authorization codes for access tokens.
 server.exchange(oauth2orize.exchange.authorizationCode(exchangecode));
-//alternative:
-//server.exchange(oauth2orize.exchange.code(exchangecode));
+// alternative:
+// server.exchange(oauth2orize.exchange.code(exchangecode));
 
+/**
+ * Makes an authorization decision
+ * @param {*} req request
+ * @param {*} done callback function
+ * @return {*} result of invoking the callback function
+ */
 function decision(req, done) {
-  //vulnerability: no scope is used
-  //More info: https://tools.ietf.org/html/rfc6819#section-5.1.5.1
+  // vulnerability: no scope is used
+  // More info: https://tools.ietf.org/html/rfc6819#section-5.1.5.1
   return done(null);
 }
 
@@ -62,83 +68,86 @@ function decision(req, done) {
 // the application.  The application issues a code, which is bound to these
 // values, and will be exchanged for an access token.
 
+/**
+ * Grants authorization code
+ * @param {*} client client for which to grant the code
+ * @param {*} redirectURI redirect uri at which to deliver the code
+ * @param {*} user the suer for which to grant the code
+ * @param {*} response response msg
+ * @param {*} done callback function
+ */
 function grantcode(client, redirectURI, user, response, done) {
-  //vulnerability: weak authorization codes
-  var code = Math.floor(Math.random() * (100000-1) +1);
-  AuthorizationCode({
+  // vulnerability: weak authorization codes
+  let code = Math.floor(Math.random() * (100000-1) +1);
+  new AuthorizationCode({
     clientID: client.clientID,
     redirectURI: redirectURI,
     user: user.id,
-    code: code
+    code: code,
   }).save(function(err, result) {
-    if (err) { return done(err); }
+    if (err) {
+      return done(err);
+    }
     done(null, code);
   });
 }
-
-/**
- * Exchange the client id and password/secret for an access token.
- *
- * The callback accepts the `client`, which is exchanging the client's id and
- * password/secret from the token request for verification. If these values are validated, the
- * application issues an access token on behalf of the client who authorized the code.
- */
-server.exchange(oauth2orize.exchange.clientCredentials((client, scope, done) => {
-  const token      = utils.createToken({ sub : client.id, exp : config.token.expiresIn });
-  const expiration = config.token.calculateExpirationDate();
-  // Pass in a null for user id since there is no user when using this grant type
-  db.accessTokens.save(token, expiration, null, client.id, scope)
-  .then(() => done(null, token, null, expiresIn))
-  .catch(err => done(err));
-}));
-
-/**
- * Exchange the refresh token for an access token.
- *
- * The callback accepts the `client`, which is exchanging the client's id from the token
- * request for verification.  If this value is validated, the application issues an access
- * token on behalf of the client who authorized the code
- */
-server.exchange(oauth2orize.exchange.refreshToken((client, refreshToken, scope, done) => {
-  db.refreshTokens.find(refreshToken)
-  .then(foundRefreshToken => validate.refreshToken(foundRefreshToken, refreshToken, client))
-  .then(foundRefreshToken => validate.generateToken(foundRefreshToken))
-  .then(token => done(null, token, null, expiresIn))
-  .catch(() => done(null, false));
-}));
 
 // Exchange authorization codes for access tokens.  The callback accepts the
 // `client`, which is exchanging `code` and any `redirectURI` from the
 // authorization request for verification.  If these values are validated, the
 // application issues an access token on behalf of the user who authorized the
 // code.
+/**
+ * Token endpoint
+ * @param {*} client client ID
+ * @param {*} code authorization code
+ * @param {*} redirectURI redirect URI
+ * @param {*} done callback function
+ */
 function exchangecode(client, code, redirectURI, done) {
-  //insecure: logging of authorization codes
-  console.log("Authorization Code: " + code);
+  // insecure: logging of authorization codes
+  console.log('Authorization Code: ' + code);
 
-  //vulnerability: authorization code can be used more than once
-  //vulnerability: expiry of authorization code is not validated
-  //vulnerability: redirectURI is not validated (open redirect)
+  // vulnerability: authorization code can be used more than once
+  // vulnerability: expiry of authorization code is not validated
+  // vulnerability: redirectURI is not validated (open redirect)
   AuthorizationCode.findOne({code: code}, function(err, authCode) {
     if (err) {
-      return done(new oauth2orize.TokenError("Error while accessing the token database.", "server_error"));
+      return done(
+          new oauth2orize.TokenError(
+              'Error while accessing the token database.',
+              'server_error'
+          )
+      );
     }
-    if(authCode == null) {
-      return done(new oauth2orize.AuthorizationError("Invalid Authorization Code.", "access_denied"));
-    } 
+    if (authCode == null) {
+      return done(
+          new oauth2orize.AuthorizationError(
+              'Invalid Authorization Code.',
+              'access_denied'
+          )
+      );
+    }
 
-    //vulnerability: weak access tokens
-    var token = Math.floor(Math.random() * (100000-1) +1);
-    //vulnerability: the token is logged
-    console.log("Access Token: " + token);
+    // vulnerability: weak access tokens
+    let token = Math.floor(Math.random() * (100000-1) +1);
+    // vulnerability: the token is logged
+    console.log('Access Token: ' + token);
 
-    AccessToken({
+    new AccessToken({
       clientID: authCode.clientID,
       user: authCode.user,
-      token: token
+      token: token,
 
     }).save(function(err, result) {
-      if (err) { return done(new oauth2orize.TokenError("Error while accessing the token database.", "server_error")); }
+      if (err) {
+        return done(
+            new oauth2orize.TokenError(
+                'Error while accessing the token database.',
+                'server_error'
+            )
+        );
+      }
       return done(null, token, null);
     });
   });
@@ -150,23 +159,35 @@ function exchangecode(client, code, redirectURI, done) {
 // authorization request.  Once validated, the `done` callback must be
 // invoked with a `client` instance, as well as the `redirectURI` to which the
 // user will be redirected after an authorization decision is obtained.
-function authorization_validate(clientID, redirectURI, done) {
-  console.log("CLIENTID: " + clientID + " " + redirectURI);
-
+/**
+ * Validate authorization
+ * @param {*} clientID client ID
+ * @param {*} redirectURI redirect URI
+ * @param {*} done callback function
+ */
+function authorizationValidate(clientID, redirectURI, done) {
+  console.log('CLIENTID: ' + clientID + ' ' + redirectURI);
   Client.findOne({clientID: clientID}, function(err, client) {
-
     if (err) {
       return done(err);
     }
-    //vulnerability: redirectURI is not validated
-    console.log("CLIENT: " + client);
-    if(client != null) {
-      return done(null, client,redirectURI);
+    // vulnerability: redirectURI is not validated
+    console.log('CLIENT: ' + client);
+    if (client != null) {
+      return done(null, client, redirectURI);
     }
     return done(null, false);
   });
 }
-function authorization_autoapprove(client, user, done) {
+
+/**
+ * Auto-approve function
+ * @param {*} client client id
+ * @param {*} user user
+ * @param {*} done callback function
+ * @return {*} returns the result of the callback function
+ */
+function authorizationAutoapprove(client, user, done) {
   if (client.isTrusted()) {
     // Auto-approve
     return done(null, true);
@@ -174,7 +195,13 @@ function authorization_autoapprove(client, user, done) {
   // Otherwise ask user
   done(null, false);
 }
-function renderdialog(req, res){
+
+/**
+ * Renders the dialog
+ * @param {*} req request
+ * @param {*} res response
+ */
+function renderdialog(req, res) {
   res.render('dialog', {
     transactionID: req.oauth2.transactionID,
     user: req.user,
@@ -183,10 +210,62 @@ function renderdialog(req, res){
   );
 }
 
+/**
+ * Returns information about the access token.
+ * @param {*} req request
+ * @param {*} res response
+ */
+function tokeninfo(req, res) {
+  let token = req.query.access_token;
+  AccessToken.findOne({token: token}, function(err, token) {
+    if (err != null || token == null) {
+      res.status(400);
+      return res.json({error: 'invalid_token'});
+    }
+    creationDate = Math.floor(new Date(token.created_at).getTime()/1000);
+    const expirationLeft = Math.floor(
+        (
+          // creation date in seconds since epoch
+          creationDate
+          // expiry time in seconds; e.g. 3600
+          + token.expires_in
+          // current time in seconds since epoch
+          - Math.floor(Date.now()/1000)
+        )
+    );
+    let client = token.clientID;
+    Client.findOne({clientID: client}, function(err, client) {
+      if (err != null || client == null) {
+        res.status(400);
+        return res.json({error: 'invalid_token'});
+      }
+      User.findOne({_id: token.user}, function(err, user) {
+        if (err != null || user == null) {
+          res.status(400);
+          return res.json({error: 'invalid_token'});
+        }
+        return res.json({
+          iss: req.headers.host, // insecure: JSON injection
+          sub: token.user,
+          aud: client.clientID,
+          azp: client.clientID,
+          exp: expirationLeft,
+          iat: creationDate,
+          name: user.username,
+        });
+      });
+    });
+  });
+}
+
 exports = module.exports = {
   decision: server.decision(decision),
   renderdialog: renderdialog,
-  authorization: server.authorization(authorization_validate, authorization_autoapprove),
+  authorization: server.authorization(
+      authorizationValidate,
+      authorizationAutoapprove
+  ),
   token: server.token(),
-  errorHandler: server.errorHandler()
+  errorHandler: server.errorHandler(),
+  tokeninfo: tokeninfo,
 };

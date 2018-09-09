@@ -1,98 +1,127 @@
-var passport = require('passport');
-var login = require('connect-ensure-login');
+const path = require('path');
 
 /**
-* Returns an image, either as json or via jade views
-**/
+ * Returns an image, either as json or via jade views
+ * @param {*} req request
+ * @param {*} res response
+ * @param {*} image image
+ * @return {*} response
+ */
 function serveImage(req, res, image) {
   if (image) {
-    //calculate file path
-    var path = require('path');
-    var blah2 = process.argv[1].split(path.sep);
+    // calculate file path
+    let blah2 = process.argv[1].split(path.sep);
     blah2.pop();
     blah2.push('public');
     blah2.push('uploads');
-    var root = path.sep; //probably only works in linux
-    for (var i = 0; i < blah2.length; i++) {
+    let root = path.sep; // probably only works in linux
+    for (let i = 0; i < blah2.length; i++) {
       root = path.join(root, blah2[i]);
     }
-    //serve it
-    //url is the actual file name...
-    return res.sendFile(image.url, { headers: { 'Content-Type': 'image/*' }, root: root });
+    // serve it
+    // url is the actual file name...
+    return res.sendFile(image.url,
+        {
+          headers: {
+            'Content-Type': 'image/*',
+          },
+          root: root,
+        }
+    );
   }
 }
 
 /**
-* Gets ulr based on request
-*/
+ * Gets ulr based on request
+ * @param {*} req request
+ * @return {*} url
+ */
 function getFullURL(req) {
-  if (req == null)
+  if (req == null) {
     return '';
-  return req.protocol + "://" + req.get('Host');
+  }
+  return req.protocol + '://' + req.get('Host');
 }
 
 /**
-* Gets url based on gallery owner
-*/
+ * Gets url based on gallery owner
+ * @param {*} username
+ * @return {*} image path
+ */
 function getImagePath(username) {
-  if (username)
-    return "/photos/" + username + '/';
-  else {
+  if (username) {
+    return '/photos/' + username + '/';
+  } else {
     return image;
   }
 }
 
 /**
-* Renders error page
-*/
+ * Renders error page
+ * @param {*} req request
+ * @param {*} res response
+ * @param {*} err error msg
+ * @param {*} page page
+ * @return {*} response message
+ */
 function renderError(req, res, err, page) {
   if (err) {
     return res.format({
-      'text/html': function () {
+      'text/html': function() {
         res.render(page, {
           user: req.user,
-          error: err.message
+          error: err.message,
         });
       },
-      //if json: render a json response
-      'application/json': function () {
-        res.status(400).send({ error: err.message });
+      // if json: render a json response
+      'application/json': function() {
+        res.status(400).send({error: err.message});
       },
-      //other formats are not supported
-      'default': function () {
-        res.status(406).send("Not Acceptable");
-      }
+      // other formats are not supported
+      'default': function() {
+        res.status(406).send('Not Acceptable');
+      },
     });
   }
 }
 
 /**
-* Renders message
-*/
+ * Renders message
+ * @param {*} req request
+ * @param {*} res response
+ * @param {*} msg message
+ * @param {*} status status
+ * @return {*} formatted response message
+ */
 function renderMessage(req, res, msg, status) {
   if (!msg) {
     return res.status(status).end();
   }
   return res.format({
-    'text/html': function () {
+    'text/html': function() {
       res.status(status).render(page, {
         user: req.user,
-        message: msg
+        message: msg,
       });
     },
-    //if json: render a json response
-    'application/json': function () {
-      res.status(status).send({ message: msg });
+    // if json: render a json response
+    'application/json': function() {
+      res.status(status).send({message: msg});
     },
-    //other formats are not supported
-    'default': function () {
-      res.status(406).send("Not Acceptable");
-    }
+    // other formats are not supported
+    'default': function() {
+      res.status(406).send('Not Acceptable');
+    },
   });
 }
 
+/**
+ * Returns the username
+ * @param {*} req request
+ * @return {*} username
+ */
 function getUsername(req) {
-  var userid = req.params.username;
+  let userid = req.params.username;
   if (userid === 'me') {
     userid = req.user.username;
   }
@@ -105,5 +134,5 @@ module.exports = {
   getFullURL: getFullURL,
   getImagePath: getImagePath,
   renderMessage: renderMessage,
-  getUsername: getUsername
+  getUsername: getUsername,
 };

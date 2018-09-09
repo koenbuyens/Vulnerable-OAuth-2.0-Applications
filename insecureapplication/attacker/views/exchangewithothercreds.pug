@@ -1,0 +1,8 @@
+extends layout
+
+block content
+  .container
+    h2 Authorization Code
+    p I exchanged #{code} with #{clientid} and #{secret} for the following #{access_token}. This token allows me to obtain pictures such as the following:
+    each pic, i in images
+      img(src=basepath + pic._id + '/raw' width='200px' alt=pic.description) 

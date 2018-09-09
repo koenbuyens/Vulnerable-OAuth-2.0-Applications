@@ -1,97 +1,126 @@
-/*jshint esversion: 6 */
-var path = require('path');
-var User = require('../models/user');
-var MyImage = require('../models/image');
-var util = require('./util');
-var config = require("../config/config.json");
-var multer = require('multer');
-var fs = require('fs');
-var path = require('path');
+const path = require('path');
+const User = require('../models/user');
+const MyImage = require('../models/image');
+const util = require('./util');
+const multer = require('multer');
+const fs = require('fs');
 
-//vulnerability: anyone can access pictures in the uploads directory as they are public
-var upload = multer({
+// vulnerability: anyone can access pictures in the uploads directory
+// as they are public
+let upload = multer({
   dest: __dirname + '/../public/uploads',
-  limits: { fileSize: 5000000, files: 12 }
+  limits: {fileSize: 5000000, files: 12},
 });
 
+/**
+ * Returns the username of the given user
+ * @param {*} req the request
+ * @return {*} The username
+ */
 function getUsername(req) {
-  var userid = req.params.username;
+  let userid = req.params.username;
   if (userid === 'me') {
     userid = req.user.username;
   }
   return userid;
 }
 
+/**
+ * Renders the gallery of the user in the request.
+ * @param {*} req the request
+ * @param {*} res the response
+ */
 function getGallery(req, res) {
-  var userid = getUsername(req);
-  User.findOne({ username: userid }, function (err, founduser) {
+  let userid = getUsername(req);
+  User.findOne({username: userid}, function(err, founduser) {
     if (founduser == null) {
-      err = "No gallery for this user.";
+      err = 'No gallery for this user.';
     }
     if (err) return util.renderError(req, res, err, 'error');
     return renderGallery(req, res, founduser);
   });
 }
 
+/**
+ * Updates the metadata of the image for the image in the request.
+ * @param {*} req the request containing image metadata.
+ * @param {*} res the response
+ */
 function updateImage(req, res) {
-  var imageid = req.params.imageid;
-  var username = req.params.username;
-  var description = req.body.description;
+  let imageid = req.params.imageid;
+  let description = req.body.description;
 
-  MyImage.findOneAndUpdate({ _id: imageid }, { description: description }, function (err, image) {
-    if (err) return util.renderError(req, res, err, 'error');
-    return util.renderMessage(req, res, null, 204);
-  });
+  MyImage.findOneAndUpdate(
+      {_id: imageid},
+      {description: description},
+      function(err, image) {
+        if (err) return util.renderError(req, res, err, 'error');
+        return util.renderMessage(req, res, null, 204);
+      }
+  );
 }
 
+/**
+ * Deletes the given image.
+ * @param {*} req request containing the id of the image to delete.
+ * @param {*} res response stating whether it was deleted.
+ */
 function deleteImage(req, res) {
-  var imageid = req.params.imageid;
+  let imageid = req.params.imageid;
 
   MyImage.findOneAndRemove(
-    { _id: imageid },
-    function (err, image) {
-      if (err) return util.renderError(req, res, err, 'error');
-      return util.renderMessage(req, res, "Successfully Deleted.", 200);
-    });
+      {_id: imageid},
+      function(err, image) {
+        if (err) return util.renderError(req, res, err, 'error');
+        return util.renderMessage(req, res, 'Successfully Deleted.', 200);
+      }
+  );
 }
 
-
+/**
+ * Renders the uploaded image.
+ * @param {*} req request
+ * @param {*} res response
+ */
 function renderUpload(req, res) {
   res.render('upload', {
-    user: req.user
+    user: req.user,
   });
 }
 
 
 /**
-* Renders a gallery for a given user
-*/
+ *  Renders a gallery for a given user
+ * @param {*} req request
+ * @param {*} res response
+ * @param {*} user user for which to render the gallery
+ */
 function renderGallery(req, res, user) {
-  var backURL = req.header('Referer') || '/';
+  let backURL = req.header('Referer') || '/';
   if (user) {
-    user.images(function (err, result) {
+    user.images(function(err, result) {
       util.renderError(req, res, err, 'error');
       if (!err) {
         return res.format({
-          //if accept: text/html render a page
-          'text/html': function () {
+          // if accept: text/html render a page
+          'text/html': function() {
             res.render('gallery', {
               user: req.user,
               gallery: user,
               images: result,
               basepath: util.getFullURL(),
               imagepath: util.getImagePath(user.username),
-              backURL: backURL
+              backURL: backURL,
             });
           },
-          //if json: render a json response
-          'application/json': function () {
-            res.status(200).send({ images: result });
+          // if json: render a json response
+          'application/json': function() {
+            res.status(200).send({images: result});
           },
-          //other formats are not supported
-          'default': function () {
-            res.status(406).send("Not Acceptable");
-          }
+          // other formats are not supported
+          'default': function() {
+            res.status(406).send('Not Acceptable');
+          },
         });
       }
     });
@@ -99,79 +128,96 @@ function renderGallery(req, res, user) {
 }
 
 /**
-* Returns an images metadata, either as json or via jade views
-**/
+ * Returns an images metadata, either as json or via jade views
+ * @param {*} req request
+ * @param {*} res response
+ */
 function getImageMetaData(req, res) {
-  var imageid = req.params.imageid;
-  var username = getUsername(req);
-  MyImage.findOne({ _id: imageid }, function (err, image) {
+  let imageid = req.params.imageid;
+  let username = getUsername(req);
+  MyImage.findOne({_id: imageid}, function(err, image) {
     if (err) return util.renderError(req, res, err, 'error');
     return renderImage(req, res, image, username);
   });
 }
 
 /**
-* Uploads an image.
-*/
+ * Uploads an image.
+ * @param {*} req request
+ * @param {*} res response
+ */
 function uploadImage(req, res) {
   /** When using the "single"
       data come in "req.file" regardless of the attribute "name". **/
-  var tmp_path = req.file.path;
+  let tmpPath = req.file.path;
 
   /** The original name of the uploaded file
       stored in the variable "originalname". **/
-  var target_path = path.join('public', 'uploads', req.file.originalname);
+  let targetPath = path.join('public', 'uploads', req.file.originalname);
 
   /** copy the uploaded fil. **/
-  var src = fs.createReadStream(tmp_path);
-  var dest = fs.createWriteStream(target_path);
+  let src = fs.createReadStream(tmpPath);
+  let dest = fs.createWriteStream(targetPath);
   src.pipe(dest);
 
-  //copied the file to the destination
-  src.on('end', function () {
-    MyImage({
+  // copied the file to the destination
+  src.on('end', function() {
+    new MyImage({
       url: req.file.originalname,
       description: req.body.description,
-      userid: req.user._id
+      userid: req.user._id,
     }).save();
     res.redirect('/');
   });
-  src.on('error', function (err) { return res.render('error'); });
+  src.on('error', function(err) {
+    return res.render('error');
+  });
 }
 
 
 /**
-* Find the image and serve it
-*/
+ * Find the image and serve it
+ * @param {*} req request
+ * @param {*} res response
+ */
 function serveImage(req, res) {
-  var imageid = req.params.imageid;
-  MyImage.findOne({ _id: imageid }, function (err, image) {
+  let imageid = req.params.imageid;
+  MyImage.findOne({_id: imageid}, function(err, image) {
     if (err) return util.renderError(req, res, err, 'error');
     util.serveImage(req, res, image);
   });
 }
 
+/**
+ * Renders the given image
+ * @param {*} req request
+ * @param {*} res response
+ * @param {*} image image
+ * @param {*} username username
+ * @return {*} Message to be rendered.
+ */
 function renderImage(req, res, image, username) {
-  if (!image)
-    return util.renderMessage(req, res, "Image Not Found.", 404);
+  if (!image) {
+    return util.renderMessage(req, res, 'Image Not Found.', 404);
+  }
   return res.format({
-    //if accept: text/html render a page
-    'text/html': function () {
+    // if accept: text/html render a page
+    'text/html': function() {
       res.render('image', {
         user: req.user,
         image: image,
         basepath: util.getFullURL(),
-        imagepath: util.getImagePath(username)
+        imagepath: util.getImagePath(username),
       });
     },
-    //if json: render a json response
-    'application/json': function () {
-      res.status(200).send({ image });
+    // if json: render a json response
+    'application/json': function() {
+      res.status(200).send({image});
     },
-    //other formats are not supported
-    'default': function () {
-      res.status(406).send("Not Acceptable");
-    }
+    // other formats are not supported
+    'default': function() {
+      res.status(406).send('Not Acceptable');
+    },
   });
 }
 
@@ -182,5 +228,5 @@ exports = module.exports = {
   updateImage: updateImage,
   deleteImage: deleteImage,
   uploadImage: [upload.single('recfile'), uploadImage],
-  renderUpload: renderUpload
+  renderUpload: renderUpload,
 };

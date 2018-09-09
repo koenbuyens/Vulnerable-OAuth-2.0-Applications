@@ -1,4 +1,6 @@
-# TL;DR
+# OAuth 2.0 - Secuirty Considerations
+
+## TL;DR
 
 We show how to use OAuth 2.0 securely when using
 
@@ -72,7 +74,7 @@ as clients. For each of these clients, we  elaborate on the overall design, impl
 
 <!-- /TOC -->
 
-# Introduction
+## Introduction
 
 In this article, we elaborate on *common* security mistakes that architects and developers make when designing or implementing OAuth 2.0-enabled applications. The article not only describes these mistakes from a theoretical perspective, but also provides a set of working sample applications that contain those mistakes. This serves three purposes:
 
@@ -84,7 +86,7 @@ The article is structured as follows. Section [Background](#background) introduc
 
 **Note:** the mistakes are common across technology stacks; we use the MEAN stack for illustration purposes only.
 
-# Running Example and Background
+## Running Example and Background
 
 Our canonical running example consists of a web site that enables users to manage pictures, named `gallery`.  This gallery application is similar to `flickr.com` in the sense that users can upload pictures, share them with friends, and organize those pictures in different albums.
 
@@ -107,11 +109,11 @@ Naturally, we also would like to create our own mobile application that our user
 
 Before opening up our gallery API towards third-parties, we would need to make the following high-level design decisions.
 
-# Architect: Major Design Decisions
+## Architect: Major Design Decisions
 
 Now that we know what OAuth 2.0 is typically used for, we elaborate on the major design decisions that architects face when designing an OAuth 2.0 enabled application.
 
-## Use the Authorization Code Grant for Classic Web Applications and Native Mobile Apps
+### Use the Authorization Code Grant for Classic Web Applications and Native Mobile Apps
 
 In OAuth 2.0, the interactions between the user and her browser, the Authorization Server, and the Resource Server can be performed in four different flows.
 
@@ -139,7 +141,7 @@ Using an incorrect flow for a client has various security implications. For inst
 
 In the subsequent sections, we show how to use OAuth 2.0 when using a [Classic Web Application](#classic-web-application-authorization-code-grant-flow), a [Single Page Application](#single-page-application-implicit-grant-flow), and [Mobile Application](#mobile-application-authorization-code-grant-with-pkce) as clients. For each of these sections, we  elaborate on the overall design, implement that design using the MEAN stack, and touch upon common security mistakes.
 
-## Use Refresh Tokens When You Trust the Client to Store Them Securely
+### Use Refresh Tokens When You Trust the Client to Store Them Securely
 
 OAuth 2.0 uses two types of tokens, namely Access Tokens and Refresh Tokens.
 
@@ -152,7 +154,7 @@ Just like passwords, it is important that the *Client* stores these *Refresh Tok
 
 ![A decision tree that helps an architect to decide whether to support refresh tokens](./pics/DecisionTreeRefreshToken.png)
 
-## Use Handle-Based Tokens Outside Your Network
+### Use Handle-Based Tokens Outside Your Network
 
 There are two ways to pass the above tokens throughout the system, namely:
 
@@ -161,11 +163,11 @@ There are two ways to pass the above tokens throughout the system, namely:
 
 To increase maintainability, [use self-contained tokens within your network, but use handle-based tokens outside of it](https://www.youtube.com/watch?v=BdKmZ7mPNns). The main reason is that *Access Tokens* are meant to be consumed by the API itself, not by the *Client*. If we share self-contained tokens with Clients, they might consume these tokens in ways that we had not intended. Changing the content (or structure) of our self-contained tokens might thus break lots of *Client* applications (in ways we had not foreseen).
 
-If *Client applications* require access to data that is in the self-contained token, offer an API that enables *Client* applications to obtain information related to that *Access Token*. If we want to use self-contained tokens and prevent clients from accessing the contents, encrypt those tokens.
+If *Client applications* require access to data that is in the self-contained token, [offer an API](http://tools.ietf.org/html/rfc7662) that enables *Client* applications to obtain information related to that *Access Token*. If we want to use self-contained tokens and prevent clients from accessing the contents, encrypt those tokens.
 
 ![A decision tree that helps an architect decide whether to support handle-based tokens](./pics/handle-based-tokens.png)
 
-## Selecting the Token Type
+### Selecting the Token Type
 
 The OAuth 2.0 spec does not specify the types of tokens that can be used and as such we, as architects, must select a token type that makes sense for our application. Applications typically use on of the following token types:
 
@@ -177,7 +179,7 @@ Selecting the token type depends on application constraints. For instance, if th
 
 ![A decision tree that helps an architect to select a token type](./pics/selecting-token-type.png)
 
-## Use Bearer Tokens When You do not Care to Whom They Were Issued
+### Use Bearer Tokens When You do not Care to Whom They Were Issued
 
 OAuth supports different token profiles, namely:
 
@@ -186,7 +188,7 @@ OAuth supports different token profiles, namely:
 
 For most applications, Bearer tokens are sufficient. The main downside of using them is that if attackers obtains *Access Tokens*, they can use them.
 
-## Combining Authorization Server and Resource Server
+### Combining Authorization Server and Resource Server
 
 The OAuth 2.0 protocol defines the concepts of an *Authorization Server* (where a user gives consent to allow an application to access its resources) and a *Resource Server* (i.e. the API that an application can access). Both servers can be deployed on the same server or they also may be deployed to different servers.
 
@@ -194,13 +196,13 @@ If you are using a micro-service oriented architecture, it is best practice to s
 
 ![A decision tree that helps an architect to decide whether to combine authorization and resource server](./pics/combining-authorization-resource-server.png)
 
-# Classic Web Application: Authorization Code Grant Flow
+## Classic Web Application: Authorization Code Grant Flow
 
 In this Section, we elaborate on using OAuth 2.0 with a classic web application as Client: we introduce the overall design, implement that design, and touch upon common security mistakes made during design and implementation.
 
 In our running example, the third-party website `photoprint` enables users to print the pictures hosted at our gallery site uses this flow. In the real world, we typically do not control how the `photoprint` application uses our API, and therefore we stipulate the (security) requirements that our partner `photoprint` must implement in a Business Requirements Document (BRD). Additionally, we may verify that the `photoprint` application implements those requirements correctly by performing a security code review or a penetration test.
 
-## Design
+### Design
 
 The classic ```photoprint``` web application uses the Authorization Code Grant. This flow consists of the following steps.
 
@@ -220,9 +222,11 @@ Besides selecting the authorization code grant for our classic web application, 
 - we use custom handle-based tokens that are added as a Bearer header as we do not like JWTs.
 - we combine the Authorization Server and Resource Server into one as we have a simple application.
 
-## Insecure Implementation
+![Authorization code flow](./pics/generalflow.gif)
 
-### Gallery
+### Insecure Implementation
+
+#### Gallery
 
 We decide to implement our Gallery server with the [MEAN stack](http://mean.io/) : our server runs in [`express.js`](https://expressjs.com/) on top of  [`node.js`](https://nodejs.org/en/) and uses [`MongoDB`](https://www.mongodb.com/) as database. Feel free to skip this Section if you are not interested in implementation details. Read the [introductions](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/Introduction) on the [Mozilla website](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/Tutorial_local_library_website) to [understand](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/skeleton_website) how to create a basic node.js application.
 
@@ -324,13 +328,13 @@ function deserialize() {...}
 
 These functions are wired into our API. The remainder of this section walks you through the OAuth 2.0 Authorization Grant again and explains how we made our API Oauth 2.0 aware with `oauth2orize`.
 
-#### Step 1: Click print Button
+##### Step 1: Click print Button
 
 Vivian authenticates to the ```photoprint``` website and clicks the 'Print Pictures From Gallery' button.
 
 ![The Print Button on photoprint.](./pics/printpicturesfromgallery.png)
 
-#### Step 2: Redirect to Gallery, Authenticate, and Consent Request
+##### Step 2: Redirect to Gallery, Authenticate, and Consent Request
 
 After Vivian clicked the print button, she is redirected by the Client (photoprint) to the Authorization Endpoint on the Authorization Server. That redirection request is as follows.
 
@@ -374,7 +378,7 @@ is not trusted.
 
 ![The user needs to approve photoprint to access the pictures at gallery.](./pics/authcodegrant-dialog.png)
 
-#### Step 3: Approval and Generation of Authorization Code
+##### Step 3: Approval and Generation of Authorization Code
 
 If the user clicks the Allow button, she submits the following request to the decision endpoint. Note that the transaction id is generated by oauth2orize and hard to guess.
 
@@ -411,7 +415,7 @@ function grantcode(client, redirectURI, user, response, done) {
 }
 ```
 
-#### Step 4: Redirection To The Client
+##### Step 4: Redirection To The Client
 
 The server redirects the user back to the `photoprint` application (using the original `redirectURI` parameter) with an authorization code in the URL.
 
@@ -422,7 +426,7 @@ Connection: keep-alive
 Referer: http://gallery:3005/oauth/authorize?redirect_uri=http%3A%2F%2Fphotoprint%3A3000%2Fcallback&scope=view_gallery&response_type=code&client_id=photoprint
 ```
 
-#### Step 5:  Client Sends Authorization Code And Its Credentials To The Token Endpoint
+##### Step 5:  Client Sends Authorization Code And Its Credentials To The Token Endpoint
 
 The `photoprint` application then exchanges the *Authorization Code* and its *OAuth Client Id and Secret* for an *Access Token* by invoking the token endpoint. The request contains the parameters `authorization_code`, `redirect_uri`, `grant_type`, `client_id`, and `client_secret`. The `authorization_code` is a proof that the user approved this client to access their resources. The `grant_type` is the type of the code that was delivered (i.e., an `authorization_code`). The `redirect_uri` is the URI where the *Access Tokens* will be delivered. The `client_id` and the `client_secret` authenticate the client. They can be delivered via an Authorization header or as parameters in the body of the request.
 
@@ -437,7 +441,7 @@ Connection: close
 code=92890&redirect_uri=http%3A%2F%2Fphotoprint%3A3000%2Fcallback&grant_type=authorization_code&client_id=photoprint&client_secret=secret
 ```
 
-#### Step 6: Issue An Access Token At The Token Endpoint
+##### Step 6: Issue An Access Token At The Token Endpoint
 
 The token endpoint typically uses `Passport` strategies (an authentication middleware) to authenticate the client via either an HTTP Passport Basic authentication header (as provided by `passport-http`) or client credentials in the request body passport-http (as provided by `passport-oauth2-client-password`). The token endpoint is implemented by oauth2orize in the `server.token()` function. If an error occurs, the `errorHandler` function will    format an error response.  
 
@@ -472,7 +476,7 @@ Content-Length: 64
 {"access_token":"54698","expires_in":3600,"token_type":"Bearer"}
 ```
 
-#### Step 7: Access a Resource
+##### Step 7: Access a Resource
 
 The print application then uses the access token to access a resource on gallery. In the example below, it accesses all the photos of a given user.
 
@@ -494,18 +498,18 @@ passport.use(new BearerStrategy(
     }); }));
 ```
 
-### Print
+#### Print
 
 Incidentally, the `photoprint` web application also uses the MEAN stack. The print application is a fairly simple application.
 TODO implement obtaining a profile, authenticating, and storing orders (to illustrate OpenId connect).
 
-## Security Considerations
+### Security Considerations
 
 In this section, we present common security mistakes made when designing/implementing an OAuth 2.0 enabled application. This section lists a subset of what is listed in [RFC 6819](https://tools.ietf.org/html/rfc6819).
 
-### Gallery Authorization Server
+#### Gallery Authorization Server
 
-#### Authorization Endpoint: Validate the RedirectURI Parameter
+##### Authorization Endpoint: Validate the RedirectURI Parameter
 
 If the authorization server does not validate that the redirect URI belongs to the client, it is susceptible to two types of attacks:
 
@@ -519,7 +523,7 @@ To validate this as a tester, do the following:
 1. Capture the URL that the OAuth 2.0 client uses to talk with the authorization endpoint.  `http://gallery:3005/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Fphotoprint%3A3000%2Fcallback&scope=view_gallery&client_id=photoprint`
 2. Change the value of the redirect_uri parameter to one you control.  `http://gallery:3005/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Fattacker%3A1337%2Fcallback&scope=view_gallery&client_id=photoprint`
 
-#### Authorization Endpoint: Generate Strong Authorization Codes
+##### Authorization Endpoint: Generate Strong Authorization Codes
 
 If the tokens are weak, an attacker may be able to guess them at the token endpoint. This is especially true if the client secret is compromised, not used, or not validated. ![Attacker correctly guesses the authorization codes by performing a bruteforce attack.](./pics/weakauthorizationcodes.gif)
 
@@ -537,102 +541,119 @@ To validate this as a tester, analyze the entropy of multiple captured authoriza
 
 Alternatively, bruteforce the tokens if you have a compromised client secret or if the client secret is not necessary. This is the approach the attacker took.
 
-#### Authorization Endpoint: Expire Unused Authorization Codes
+##### Authorization Endpoint: Expire Unused Authorization Codes
 
 Expiring unused authorization codes limits the window in which an attacker can use captured or guessed authorization codes.
 
 To remediate this, expire authorization codes 15-30 minutes after they have been generated.
 
-To validate this as a tester, generate an authorization code but only redeem it after 31 minutes.
+To validate this as a tester, obtain an authorization code but only redeem it after 31 minutes.
 
 1. Configure BurpSuite and intercept the request that the OAuth 2.0 client sends to the OAuth 2.0 Authorization Endpoint.
 2. Send that request to the BurpSuite Plugin 'Session Timeout Test'.  ![Send the request to session timeout test.](./pics/expiredauthorizationcodes_burptimeout1.png)
 3. Configure the plugin by selecting a matching string that indicates the authorization code is invalid (typically 'Unauthorized') and a mininmum timeout of 31 minutes.  ![Send the request to session timeout test.](./pics/expiredauthorizationcodes_burptimeout2.png)
 4. Observe the result.
 
-#### Token Endpoint: Invalidate Authorization Codes After Use
+##### Token Endpoint: Invalidate Authorization Codes After Use
 
 Invalidating used authorization codes limits the window in which an attacker can use captured or guessed authorization codes.
 
 To remediate this, follow the OAuth 2.0 specification and delete authorization codes from the database after they have been used.
 
-To validate this as a tester, generate an authorization code and redeem it twice.
+To validate this as a tester, obtain an authorization code and redeem it twice.
 
 1. Configure BurpSuite and intercept the request that the OAuth 2.0 client sends to the OAuth 2.0 Authorization Endpoint.
-
 2. Send that request to BurpSuite Repeater.
-
 3. Repeat that request and validate whether it fails.
 
-#### Token Endpoint: Bind the Authorization Code to the Client
+##### Token Endpoint: Bind the Authorization Code to the Client
+
+An attacker can exchange captured or guessed authorization codes for access tokens by using the credentials for another, potentially malicious, client.
+
+![Attacker can exchange the authorization code for an access token as it is not bound to the photoprint client.](./pics/authorizationcodenotboundtoclient.gif)
+
+To remediate this, bind the authorization code to the client.
+
+To validate this as a tester, obtain an authorization code for the OAuth 2.0 client and exchange with another client.
+
+```http
+POST /oauth/token HTTP/1.1
+host: gallery:3005
+Content-Length: 133
+Connection: close
+
+code=9&redirect_uri=http%3A%2F%2Fphotoprint%3A3000%2Fcallback&grant_type=authorization_code&client_id=maliciousclient&client_secret=secret
+```
+
+##### Token Endpoint: Generate Strong Handle-Based Access and Refresh Tokens
 
 TODO
 
-#### Token Endpoint: Expire Access and Refresh Tokens
+##### Token Endpoint: Store Handle-Based Access and Refresh Tokens Securely
 
 TODO
 
-#### Token Endpoint: Generate Strong Handle-Based Access and Refresh Tokens
+##### Token Endpoint: Expire Access and Refresh Tokens
 
 TODO
 
-#### Token Endpoint: Store Handle-Based Access and Refresh Tokens Securely
+##### Token Endpoint: Store Client Secrets Securely
 
 TODO
 
-#### Token Endpoint: Limit Token Scope
+##### Use Strong Client Secrets
 
 TODO
 
-#### Token Endpoint: Store Client Secrets Securely
+##### Implement Rate-Limiting
 
 TODO
 
-#### Token Endpoint: Bind Refresh Token to Client
+##### Token Endpoint: Bind Refresh Token to Client
 
 TODO
 
-#### Resource Server: Reject Revoked Tokens
+##### Resource Server: Reject Revoked Tokens
 
 TODO
 
-#### Resource Server: Validate Token Scope
+##### Token Endpoint: Limit Token Scope
 
 TODO
 
-#### Implement Rate-Limiting
+##### Resource Server: Validate Token Scope
 
 TODO
 
-### Photoprint OAuth 2.0 Client
+#### Photoprint OAuth 2.0 Client
 
-#### Store Client Secrets Securely
-
-TODO
-
-#### Store Access and Refresh Tokens Securely
+##### Store Client Secrets Securely
 
 TODO
 
-# Mobile Application: Authorization Code Grant with PKCE
+##### Store Access and Refresh Tokens Securely
+
+TODO
+
+## Mobile Application: Authorization Code Grant with PKCE
 
 The proof key for code exchange TODO [https://tools.ietf.org/html/rfc7636](https://tools.ietf.org/html/rfc7636)
 
-## Design of OAuth 2.0 Mobile Application
+### Design of an OAuth 2.0 Mobile Application
 
 TODO design content
 
-## Implementation
+### Implementation of an OAuth 2.0 Mobile Application
 
 RFC 6819 elaborates on common security mistakes within OAuth 2.0.
 
-## Testing
+### Testing of an OAuth 2.0 Mobile Application
 
 TODO
 
-# Single Page Application: Implicit Grant Flow
+### Single Page Application: Implicit Grant Flow
 
-## Design of OAuth 2.0 SPA Client
+#### Design of OAuth 2.0 SPA Client
 
 TODO pic.
 
@@ -645,17 +666,17 @@ an authorization code. In our running example, it would look as follows.
 3. Assuming that Vivian gives her consent, the AS generates an Access Token and sends it back to Vivian’s browser with a redirect command toward the return URL specified by the Client. The Access Token is part of that URL.
 4. The browser honors the redirect and passes the Access Token to the Client. The Client can access the PR; Vivian's pictures with the Access Token.
 
-## Implementation of OAuth 2.0 SPA Client
+### Implementation of OAuth 2.0 SPA Client
 
 RFC 6819 elaborates on common security mistakes within OAuth 2.0.
 
-## Testing of OAuth 2.0 SPA Client
+### Testing of OAuth 2.0 SPA Client
 
 TODO testing
 
-# First Party Mobile Application: Resource Owner Password Credentials Flow
+## First Party Mobile Application: Resource Owner Password Credentials Flow
 
-## Design of First Party Mobile Application Client
+### Design of First Party Mobile Application Client
 
 The resource owner password credentials grant is a simplified flow in which the client uses the
 resource owner password credentials (username and password) to obtain an access token. In our
@@ -668,15 +689,15 @@ TODO pic
 1. The AS generates an Access Token and sends it back to the Client.
 1. The Client can access the Resource Server; Vivian's pictures with the Access Token
 
-## Implementation of First Party Mobile Application Client
+### Implementation of First Party Mobile Application Client
 
 RFC 6819 elaborates on common security mistakes within OAuth 2.0.
 
-## Security Considerations of First Party Mobile Application Client
+### Security Considerations of First Party Mobile Application Client
 
 TODO security considerations
 
-### OpenID Connect
+#### OpenID Connect
 
 Moreover, OAuth is the foundation for the single sign-on protocol OpenID Connect. OpenID
 Connect builds upon OAuth and provides clearly defined interfaces for user
@@ -684,9 +705,9 @@ authentication and additional (optional) features, such as dynamic identity
 provider discovery and relying party registration, signing and encryption of
 messages, and logout.
 
-# Checklists
+## Checklists
 
-## For Architects
+### For Architects
 
 The following questions obtain the context that is required to analyze the application for bad OAuth related design decisions.
 
@@ -755,18 +776,71 @@ Use the following tree to determine whether the correct flow was chosen.
   - [x] If mobile application with low risk profile, within 1 year
   - [ ] Other
 
-## For Software Engineers
+### For Software Engineers
 
 TODO
 
-## For Testers
+### For Testers
 
 TODO
 
-# Conclusion
+## Conclusion
 
 In this article, we showed how to use OAuth 2.0 securely when using
 
 - a [Classic Web Application](#classic-web-application-authorization-code-grant-flow),
 - a [Single Page Application](#single-page-application-implicit-grant-flow), and
 - a [Mobile Application](#mobile-application-authorization-code-grant-with-pkce) as clients. For each of these clients, we  elaborated on the overall design, implemented that design using the MEAN stack, and touched upon common security mistakes.
+
+## References
+
+Partially taken from [https://oauth.net/2/](https://oauth.net/2/).
+
+### OAuth 2.0 Core
+
+- [OAuth 2.0 Framework - RFC 6749](http://tools.ietf.org/html/rfc6749)
+- [OAuth 2.0 Grant Types](https://oauth.net/2/grant-types/)
+  - [Authorization Code](https://tools.ietf.org/html/rfc6749#section-1.3.1)
+  - [Implicit](https://tools.ietf.org/html/rfc6749#section-1.3.2)
+  - [Password](https://tools.ietf.org/html/rfc6749#section-1.3.3)
+  - [Client Credentials](https://tools.ietf.org/html/rfc6749#section-1.3.4)
+  - [Device Code](https://tools.ietf.org/html/draft-ietf-oauth-device-flow-07#section-3.4)
+  - [Refresh Token](https://tools.ietf.org/html/rfc6749#section-1.5)
+- [OAuth 2.0 Bearer Tokens - RFC 6750](https://tools.ietf.org/html/rfc6750)
+- [Threat Model and Security Considerations - RFC 6819](https://tools.ietf.org/html/rfc6819)
+
+### Mobile and Other Devices
+
+- [Native Apps - Recommendations for using OAuth 2.0 with native apps - RFC 8252](http://tools.ietf.org/html/rfc8252)
+- [PKCE - Proof Key for Code Exchange, better security for native apps - RFC 7636](http://tools.ietf.org/html/rfc7636)
+- [OAuth 2.0 Device Flow - RFC draft](https://tools.ietf.org/html/draft-ietf-oauth-device-flow)
+
+### Token and Token Management
+
+- [OAuth 2.0 Token Introspection - RFC 7662, to determine the active state and meta-information of a token](http://tools.ietf.org/html/rfc7662)
+- [OAuth 2.0 Token Revocation - RFC 7009, to signal that a previously obtained token is no longer needed](http://tools.ietf.org/html/rfc7009)
+- [JSON Web Token - RFC 7519](http://tools.ietf.org/html/rfc7519)
+
+### Other Extensions
+
+- [OAuth Assertions Framework - RFC 7521](http://tools.ietf.org/html/rfc7521)
+- [SAML2 Bearer Assertion - RFC 7522, for integrating with existing identity systems](http://tools.ietf.org/html/rfc7522)
+- [JWT Bearer Assertion - RFC 7523, for integrating with existing identity systems](http://tools.ietf.org/html/rfc7523)
+- [OAuth WG Status Pages](https://tools.ietf.org/wg/oauth/)
+
+### Community Resources
+
+- [oauth.net](https://oauth.net/2/)
+- [OAuth 2.0 Simplified](https://aaronparecki.com/oauth-2-simplified/)
+- Books about OAuth
+  - [OAuth 2.0 Simplified by Aaron Parecki](https://oauth2simplified.com/)
+  - [OAuth 2 in Action by Justin Richer and Antonio Sanso](https://www.amazon.com/OAuth-2-Action-Justin-Richer/dp/161729327X/?tag=oauthnet-20)
+  - [Mastering OAuth 2.0 by Charles Bihis](https://www.amazon.com/Mastering-OAuth-2-0-Charles-Bihis/dp/1784395404?tag=oauthnet-20)
+  - [OAuth 2.0 Cookbook by Adolfo Eloy Nascimento](https://www.amazon.com/dp/178829596X?tag=oauthnet-20)
+- [OAuth articles by Alex Bilbie](https://alexbilbie.com/tag/oauth/)
+
+### Protocols Built on OAuth 2.0
+
+- [OpenID Connect](http://openid.net/connect/)
+- [UMA](https://docs.kantarainitiative.org/uma/rec-uma-core.html)
+- [IndieAuth](https://indieauth.spec.indieweb.org/)

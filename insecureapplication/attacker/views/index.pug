@@ -17,3 +17,17 @@ block content
     p 
       | Bruteforce authorization codes 
       | <a href="http://attacker:1337/guessauthzcode">here</a>.
+
+    h3 Exchange authorization code with other credentials
+    p 
+      form(method='POST' action='/exchangewithothercreds')
+        div.form-group
+          label(for='code') Authorization Code:
+          input#code.form-control(type='text', placeholder='15637', value='15637',name='code')
+        div.form-group
+          label(for='clientid') Client ID:
+          input#clientid.form-control(type='text', placeholder='maliciousclient', value='maliciousclient', name='clientid')
+        div.form-group
+          label(for='secret') Client Secret:
+          input#secret.form-control(type='password', placeholder='secret',  value='secret',name='secret')
+        button.btn.btn-primary(type='submit') Submit
