@@ -15,7 +15,20 @@ To run the applications:
     mongorestore -d gallery2 gallery2/
    ```
 
-3. Start the servers:
+3. Install the servers:
+
+    ```bash
+    cd gallery
+    npm install
+    cd ..
+    cd photoprint
+    npm install
+    cd ..
+    cd attacker
+    npm install
+    ```
+    
+4. Start the servers:
 
     ```bash
     cd gallery
@@ -28,6 +41,6 @@ To run the applications:
     npm start &
     ```
 
-4. Go to [http://photoprint:3000](http://photoprint:3000) to print photos hosted by gallery. **Hint**: username is koen and password is password. You can also browse the gallery by surfing to [http://gallery:3005](http://gallery:3005).
+5. Go to [http://photoprint:3000](http://photoprint:3000) to print photos hosted by gallery. **Hint**: username is koen and password is password. You can also browse the gallery by surfing to [http://gallery:3005](http://gallery:3005).
 
-5. Test out various OAuth2-related attacks by surfing to [http://attacker:1337](http://attacker:1337).
+6. Test out various OAuth2-related attacks by surfing to [http://attacker:1337](http://attacker:1337).
