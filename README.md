@@ -230,7 +230,7 @@ Besides selecting the authorization code grant for our classic web application, 
 
 #### Gallery
 
-We decide to implement our Gallery server with the [MEAN stack](http://mean.io/) : our server runs in [`express.js`](https://expressjs.com/) on top of  [`node.js`](https://nodejs.org/en/) and uses [`MongoDB`](https://www.mongodb.com/) as database. Feel free to skip this Section if you are not interested in implementation details. Read the [introductions](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/Introduction) on the [Mozilla website](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/Tutorial_local_library_website) to [understand](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/skeleton_website) how to create a basic node.js application.
+We decide to implement our Gallery server with the [MEAN stack](http://mean.io/) : our server runs in [`express.js`](https://expressjs.com/) on top of  [`node.js`](https://nodejs.org/en/) and uses [`MongoDB`](https://www.mongodb.com/) as database. Feel free to skip to the [Security Considerations Section](#security-considerations) if you are not interested in implementation details. Read the [introductions](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/Introduction) on the [Mozilla website](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/Tutorial_local_library_website) to [understand](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/skeleton_website) how to create a basic node.js application.
 
 Our gallery application is structured like a typical MEAN stack application:
 
