@@ -107,14 +107,6 @@ Naturally, we also would like to create our own mobile application that our user
 - ***Authorization Server***: the server that authenticates the Resource Owner, and issues access tokens after getting proper authorization. This is also called an identity provider (IdP).
 - ***User Agent***: the agent used by the Resource Owner to interact with the Client, for example a browser or a  mobile application.
 
-Before opening up our gallery API towards third-parties, we would need to make the following high-level design decisions.
-
-## Architect: Major Design Decisions
-
-Now that we know what OAuth 2.0 is typically used for, we elaborate on the major design decisions that architects face when designing an OAuth 2.0 enabled application.
-
-### Use the Authorization Code Grant for Classic Web Applications and Native Mobile Apps
-
 In OAuth 2.0, the interactions between the user and her browser, the Authorization Server, and the Resource Server can be performed in four different flows.
 
 1. the ***authorization code grant***: the *Client* redirects the user (*Resource Owner*) to an *Authorization Server* to ask the user whether the *Client* can access her *Resources*. After the user confirms, the *Client* obtains an *Authorization Code* that the *Client* can exchange for an *Access Token*. This *Access Token* enables the *Client* to access the *Resources* of the *Resource Owner*.
@@ -126,6 +118,14 @@ Do not worry if you do not understand the flows right away. They are elaborated 
 
 - *Clients* can obtain *Access Tokens* via four different flows.
 - *Clients* use these access tokens to access an API.
+
+Before opening up our gallery API towards third-parties, we would need to make the following high-level design decisions.
+
+## Architect: Major Design Decisions
+
+Now that we know what OAuth 2.0 is typically used for, we elaborate on the major design decisions that architects face when designing an OAuth 2.0 enabled application.
+
+### Use the Authorization Code Grant for Classic Web Applications and Native Mobile Apps
 
 A major design decision is deciding which flows to support. This largely depends on the type of clients the application supports. [Auth0 provides an excellent flow chart that helps making a good  decision](https://auth0.com/docs/api-auth/which-oauth-flow-to-use). In summary, if the *Client* is:
 
