@@ -254,27 +254,15 @@ The source code of our Gallery application is structured like a regular express.
         /images
         /javascripts
         /stylesheets
-            style.css
+            base.css
     /routes
         index.js
         users.js
     /views
-        error.jade
-        index.jade
-        layout.jade
+        error.pug
+        index.pug
+        layout.pug
 ```
-
-We decided to use the following modules (middleware):
-
-- ***[express](https://github.com/expressjs)*** to create an express application.
-- ***[mongoose](https://github.com/Automattic/mongoose)*** to store our models in a MongoDB database.
-- ***[oauth2orize](https://github.com/jaredhanson/oauth2orize)*** to make our server OAuth 2.0 aware.
-- ***[morgan](https://github.com/expressjs/morgan)*** to log messages.
-- ***[express-session](https://github.com/expressjs/session)*** to maintain sessions.
-- ***[body-parser](https://github.com/expressjs/body-parser)*** to parse request bodies.
-- ***[errorhandler](https://github.com/expressjs/errorhandler)*** to handle errors during development.
-
-We could have used alternative modules that offer the same functionality, but the above packages are typically used within an express.js application.
 
 The main API of our gallery application is fairly simple. We offer an API for manipulating user profiles and one for manipulating a user's gallery. The API to manipulate a user profile consists of a GET, PUT, and DELETE against a URI with the unique username. These operations respectively get the user profile, modify the profile, or delete the profile. A POST against the main user route creates a new user.
 
