@@ -1,6 +1,6 @@
 # Damn Vulnerable OAuth 2.0 Applications
 
-This project contains the code resulting from my experimentation with express-oauth2orize and the oauth2 protocol.
+This project contains vulnerable OAuth 2.0 applications.
 
 To run the applications:
 1. Edit your hosts file to include photoprint and gallery. If you want to check some of the attacks, also add attacker.
