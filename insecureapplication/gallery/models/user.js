@@ -1,40 +1,43 @@
-/*jshint esversion: 6 */
-var mongoose = require('mongoose');
-var passportLocalMongoose = require('passport-local-mongoose'); //takes care of salting and hashing
+const mongoose = require('mongoose');
+// takes care of salting and hashing
+const passportLocalMongoose = require('passport-local-mongoose');
 
-var Schema = mongoose.Schema;
+let Schema = mongoose.Schema;
 
-var userSchema = new Schema({
-    name: {type: String, unique: true, required: true, index: true},
-    created_at: Date,
-    updated_at: Date,
-    email: {type: String, unique: true, required: true},
-    pictures: [{type: Schema.Types.ObjectId, ref: 'Image'}],
+let userSchema = new Schema({
+  name: {type: String, unique: true, required: true, index: true},
+  created_at: Date,
+  updated_at: Date,
+  email: {type: String, unique: true, required: true},
+  pictures: [{type: Schema.Types.ObjectId, ref: 'Image'}],
 });
-userSchema.set('toJSON', { virtuals: false });
+userSchema.set('toJSON', {virtuals: false});
 
-//insecure, configure passwordValidator and give as option
+// insecure, configure passwordValidator and give as option
 userSchema.plugin(passportLocalMongoose);
 
-var MyImage = require('./image');
-var MyAlbum = require('./album');
+const MyImage = require('./image');
+const MyAlbum = require('./album');
 
 userSchema.virtual('albums').
-  get(function() { return MyAlbum.find({user: this._id});});
+    get(function() {
+      return MyAlbum.find({user: this._id});
+    });
 
-//links an image to a user
+// links an image to a user
 userSchema.methods.images = function(done) {
   return MyImage.find({userid: this._id}, done);
 };
 
 userSchema.pre('save', function(next) {
-  //update creation dates
-  var currentDate = new Date();
+  // update creation dates
+  let currentDate = new Date();
   this.updated_at = currentDate;
-  if (!this.created_at)
+  if (!this.created_at) {
     this.created_at = currentDate;
+  }
   next();
 });
 
-var User = mongoose.model('User', userSchema);
+let User = mongoose.model('User', userSchema);
 module.exports = User;
