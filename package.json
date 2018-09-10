@@ -1,0 +1,28 @@
+{
+  "name": "oauth",
+  "version": "1.0.0",
+  "description": "We show how to use OAuth 2.0 securely when using",
+  "main": "index.js",
+  "dependencies": {
+    "eslint": "^5.5.0",
+    "express": "^4.16.3",
+    "jshint": "^2.9.6"
+  },
+  "devDependencies": {
+    "eslint": "^5.5.0",
+    "eslint-config-google": "^0.10.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/koenbuyens/oauth.git"
+  },
+  "author": "Koen Buyens <koen@buyens.org>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/koenbuyens/oauth/issues"
+  },
+  "homepage": "https://github.com/koenbuyens/oauth#readme"
+}
