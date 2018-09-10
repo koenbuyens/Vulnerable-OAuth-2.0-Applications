@@ -342,17 +342,22 @@ The classic ```photoprint``` web application uses the Authorization Code Grant. 
 The overall flow looks thus as follows.
 ![Authorization code flow](./pics/generalflow.gif)
 
-Besides selecting the authorization code grant for our classic web application, we made the following design decisions:
+Besides selecting the authorization code grant for our classic web application, we made the following OAuth 2.0-related design decisions:
 
 - we allow the usage of refresh tokens as we want to avoid that users need to authenticate every time the access tokens expire.
 - we use custom handle-based tokens that are added as a Bearer header as we have one big monolythic application.
 - we combine the Authorization Server and Resource Server into one as we have a simple application.
 
+We not only made OAuth 2.0-related design decisions, but also related to the technology stack:
+
+- the `gallery` application has a simple REST API: POST (create), GET (read), UPDATE (modify), and DELETE for `images`,`users`, and `albums`. A gallery is the albums and pictures belonging to a user. Users can login via the `login` endpoint. Besides gallery-related functionality, the API also supports the OAuth 2.0-related endpoints: token endpoint (`token`) and the authorization endpoint (`authorize`).
+- the `gallery` application uses the [MEAN stack](http://mean.io/). The application uses [`express.js`](https://expressjs.com/) on top of  [`node.js`](https://nodejs.org/en/) and stores data in [`MongoDB`](https://www.mongodb.com/).
+
 ### Developer: Insecure Implementation
 
 #### Gallery
 
-We decide to implement our Gallery server with the [MEAN stack](http://mean.io/) : our server runs in [`express.js`](https://expressjs.com/) on top of  [`node.js`](https://nodejs.org/en/) and uses [`MongoDB`](https://www.mongodb.com/) as database. Feel free to skip to the [Security Considerations Section](#security-considerations) if you are not interested in implementation details. Read the [introductions](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/Introduction) on the [Mozilla website](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/Tutorial_local_library_website) to [understand](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/skeleton_website) how to create a basic node.js application.
+ Feel free to skip to the [Security Considerations Section](#security-considerations) if you are not interested in implementation details. Read the [introductions](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/Introduction) on the [Mozilla website](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/Tutorial_local_library_website) to [understand](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/skeleton_website) how to create a basic node.js application.
 
 Our gallery application is structured like a typical MEAN stack application:
 
