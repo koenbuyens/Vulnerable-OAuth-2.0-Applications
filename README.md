@@ -152,6 +152,8 @@ Think of Access Tokens [like a session that is created once you authenticate to 
 
 Just like passwords, it is important that the *Client* stores these *Refresh Tokens* securely. If you do not trust that the client will store those tokens securely, do not issue *Refresh Tokens*. An attacker with access to the *Refresh Tokens* can obtain new *Access Tokens* and use those *Access tokens* to access a user's *Resources*. The main downside of not using *Refresh Tokens* is that users would need to re-authenticate every time the *Access Token* expires.
 
+Note that public clients should not be issued refresh tokens.
+
 ![A decision tree that helps an architect to decide whether to support refresh tokens](./pics/DecisionTreeRefreshToken.png)
 
 ### Use Handle-Based Tokens Outside Your Network
