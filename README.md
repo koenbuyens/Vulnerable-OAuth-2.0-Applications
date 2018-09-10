@@ -139,7 +139,7 @@ A major design decision is deciding which flows to support. This largely depends
 
 Using an incorrect flow for a client has various security implications. For instance, using the Resource Owner Password Grant for third-party mobile applications, gives those mobile applications access to the user's credentials. These credentials allow those applications to access all of the user data, as they can just login as the user itself. This is probably something you want to avoid.
 
-<div style="color: #9F6000;background-color: #FEEFB3;margin: 10px 0px;padding:12px;">Client applications using the resource owner password grant have access to the user's credentials and thus all of their data.</div>
+<span style="color: #9F6000;background-color: #FEEFB3;margin: 10px 0px;padding:12px;">Client applications using the resource owner password grant have access to the user's credentials and thus all of their data.</span>
 
 In the subsequent sections, we show how to use OAuth 2.0 when using a [Classic Web Application](#classic-web-application-authorization-code-grant-flow), a [Single Page Application](#single-page-application-implicit-grant-flow), and [Mobile Application](#mobile-application-authorization-code-grant-with-pkce) as clients. For each of these sections, we  elaborate on the overall design, implement that design using the MEAN stack, and touch upon common security mistakes.
 
