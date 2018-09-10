@@ -202,7 +202,7 @@ If you are using a micro-service oriented architecture, it is best practice to s
 
 In this Section, we elaborate on using OAuth 2.0 with a classic web application as Client: we introduce the overall design, implement that design, and touch upon common security mistakes made during design and implementation.
 
-In our running example, the third-party website `photoprint` enables users to print the pictures hosted at our gallery site.  This printing site uses the Authorization Code Grant. In the real world, we typically do not control how the `photoprint` application uses our API, and therefore we stipulate the (security) requirements that our partner `photoprint` must implement in a Business Requirements Document (BRD). Additionally, we may verify that the `photoprint` application implements those requirements correctly by performing a security code review or a penetration test.
+In our running example, the third-party website `photoprint` enables users to print the pictures hosted at our gallery site. In the real world, we typically do not control how the `photoprint` application uses our API, and therefore we stipulate the (security) requirements that our partner `photoprint` must implement in a Business Requirements Document (BRD). Additionally, we may verify that the `photoprint` application implements those requirements correctly by performing a security code review or a penetration test.
 
 ### Architect: Design
 
