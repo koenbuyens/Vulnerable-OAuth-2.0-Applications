@@ -1,0 +1,11 @@
+extends layout
+
+block content
+  .container
+    h2 Access Token
+    if tokens.length > 0
+      p I guessed the following valid access tokens at the resource server:
+        each token in tokens
+          li='token: '+ token
+    else
+      p Unfortunately, I was not able to bruteforce access tokens.

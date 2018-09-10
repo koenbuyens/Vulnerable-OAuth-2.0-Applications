@@ -1,0 +1,11 @@
+{
+  "oauth": {
+    "client": {
+      "id": "photoprint",
+      "secret": "secret",
+      "redirect_uri": "http%3A%2F%2Fphotoprint%3A3000%2Fcallback"
+    }
+  },
+  "photos": "/photos/me",
+  "scope": "view_gallery"
+}

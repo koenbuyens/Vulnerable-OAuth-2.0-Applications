@@ -15,7 +15,7 @@ block content
         | .
     h3 Weak Authorization Codes
     p 
-      | Bruteforce authorization codes 
+      | Bruteforce authorization codes at the token endpoint 
       | <a href="http://attacker:1337/guessauthzcode">here</a>.
 
     h3 Exchange authorization code with other credentials
@@ -31,3 +31,8 @@ block content
           label(for='secret') Client Secret:
           input#secret.form-control(type='password', placeholder='secret',  value='secret',name='secret')
         button.btn.btn-primary(type='submit') Submit
+
+    h3 Weak handle-based access tokens
+    p
+       | Bruteforce access tokens at the resource server 
+       | <a href="http://attacker:1337/guessaccesstokenatresourceserver">here</a>.

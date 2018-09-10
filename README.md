@@ -587,7 +587,7 @@ code=9&redirect_uri=http%3A%2F%2Fphotoprint%3A3000%2Fcallback&grant_type=authori
 
 ##### Token Endpoint: Generate Strong Handle-Based Access and Refresh Tokens
 
-If the tokens are weak, an attacker may be able to guess them at the resource server or the token endpoint. <!-- ![Attacker correctly guesses the access tokens by performing a bruteforce attack.](./pics/weakaccesstokens.gif) -->
+If the tokens are weak, an attacker may be able to guess them at the resource server or the token endpoint. ![Attacker correctly guesses the access tokens by performing a bruteforce attack.](./pics/weakaccesstokens.png)
 
 To remediate this, generate tokens with a length of at least 128 bit using a secure pseudo-random number generator that is seeded properly. Most mature OAuth 2.0 frameworks implement this correctly.
 
@@ -608,7 +608,7 @@ To validate this as a tester, analyze the entropy of multiple captured tokens. N
 
 3. Analyze the entropy of these tokens using the same approach as described in weak authorization codes.
 
-Alternatively, bruteforce the tokens at the resource server if you have a compromised client secret or if the client secret is not necessary.
+Alternatively, bruteforce the tokens at the resource server if you have a compromised client secret or if the client secret is not necessary. The attacker above followed this approach.
 
 ##### Token Endpoint: Store Handle-Based Access and Refresh Tokens Securely
 

