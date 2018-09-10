@@ -202,7 +202,7 @@ If you are using a micro-service oriented architecture, it is best practice to s
 
 In this Section, we elaborate on using OAuth 2.0 with a classic web application as Client: we introduce the overall design, implement that design, and touch upon common security mistakes made during design and implementation.
 
-In our running example, the third-party website `photoprint` enables users to print the pictures hosted at our gallery site uses this flow. In the real world, we typically do not control how the `photoprint` application uses our API, and therefore we stipulate the (security) requirements that our partner `photoprint` must implement in a Business Requirements Document (BRD). Additionally, we may verify that the `photoprint` application implements those requirements correctly by performing a security code review or a penetration test.
+In our running example, the third-party website `photoprint` enables users to print the pictures hosted at our gallery site.  This printing site uses the Authorization Code Grant. In the real world, we typically do not control how the `photoprint` application uses our API, and therefore we stipulate the (security) requirements that our partner `photoprint` must implement in a Business Requirements Document (BRD). Additionally, we may verify that the `photoprint` application implements those requirements correctly by performing a security code review or a penetration test.
 
 ### Design
 
@@ -210,7 +210,7 @@ The classic ```photoprint``` web application uses the Authorization Code Grant. 
 
 ![Authorization Code Grant](./pics/AuthorizationCodeGrant.png)
 
-1. A user, let's call her Vivian, navigates to the printing website. This website is called the ***`Client`***. Vivian uploaded the pictures to picture gallery site (Gallery). The printing website (client, `photoprint`) offers the possibility to obtain pictures from the gallery site via a button that says *“Print pictures from the gallery site”*. Vivian clicks that button.
+1. A user, let's call her Vivian, navigates to the printing website. This website is called the `Client`. Vivian uploaded the pictures to picture gallery site (Gallery). The printing website (client, `photoprint`) offers the possibility to obtain pictures from the gallery site via a button that says *“Print pictures from the gallery site”*. Vivian clicks that button.
 2. The client redirects her to an Authorization Server (AS; Authorization Endpoint). That server allows Vivian to authenticate to the gallery site and asks her if she consents to the Client accessing her pictures.
 3. Assuming that Vivian gives her consent, the AS generates an Authorization Code (Authorization Grant) and sends it back to Vivian’s browser with a redirect command toward the return URL specified by the Client. The Authorization Code is part of that URL.
 4. The browser honors the redirect and passes the Authorization Code to the Client.
