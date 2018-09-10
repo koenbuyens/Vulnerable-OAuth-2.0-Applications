@@ -215,7 +215,8 @@ The classic ```photoprint``` web application uses the Authorization Code Grant. 
 2. The client redirects her to an Authorization Server (AS; Authorization Endpoint).
 
     ```http
-    GET /oauth/authorize?redirect_uri=http%3A%2F%2Fphotoprint%3A3000%2Fcallback&scope=view_gallery&response_type=code&client_id=photoprint HTTP/1.1
+    GET /oauth/authorize?redirect_uri=http%3A%2F%2Fphotoprint%3A3000%2Fcallback
+      &scope=view_gallery&response_type=code&client_id=photoprint HTTP/1.1
     Host: gallery:3005
     Connection: keep-alive
     Referer: http://photoprint:3000/
@@ -225,17 +226,22 @@ The classic ```photoprint``` web application uses the Authorization Code Grant. 
 3. That server allows Vivian to authenticate to the gallery site and asks her if she consents to the Client accessing her pictures.
 4. Assuming that Vivian gives her consent, the AS generates an Authorization Code (Authorization Grant) and sends it back to Vivian’s browser with a redirect command toward the return URL specified by the Client.
 
-    ```http
+    ```html
     HTTP/1.1 302 Found
     X-Powered-By: Express
-    Location: http://photoprint:3000/callback?code=630111c5-3c53-452f-ac8b-ad4e166aff76
+    Location: http://photoprint:3000/callback?
+      code=630111c5-3c53-452f-ac8b-ad4e166aff76
     Vary: Accept
     Content-Type: text/html; charset=utf-8
     Content-Length: 128
     Date: Sat, 08 Sep 2018 23:58:43 GMT
     Connection: close
 
-    <p>Found. Redirecting to <a href="http://photoprint:3000/callback?code=630111c5-3c53-452f-ac8b-ad4e166aff76">http://photoprint:3000/callback?code=630111c5-3c53-452f-ac8b-ad4e166aff76</a></p>
+    <p>Found. Redirecting to <a href="http://photoprint:3000/callback
+      ?code=630111c5-3c53-452f-ac8b-ad4e166aff76">
+        http://photoprint:3000/callback?code=630111c5-3c53-452f-ac8b-ad4e166aff76
+      </a>
+    </p>
     ```
 
     The Authorization Code is part of that URL.
@@ -253,7 +259,7 @@ The classic ```photoprint``` web application uses the Authorization Code Grant. 
     The Authorization Code is part of that URL.
 6. The Client forwards that Authorization Code together with its own credentials to the AS (Token Endpoint). From this step on, the interactions are server-to-server. The Authorization Code proves that Vivian consented to the actions that the Client wants to do. Moreover, the message contains the Client’s own credentials (the Client ID and the Client Secret).
 
-    ```http
+    ```html
     POST /oauth/token HTTP/1.1
     Accept: application/json
     host: gallery:3005
@@ -269,7 +275,7 @@ The classic ```photoprint``` web application uses the Authorization Code Grant. 
     The request contains the parameters `authorization_code`, `redirect_uri`, `grant_type`, `client_id`, and `client_secret`. The `authorization_code` is a proof that the user approved this client to access their resources. The `grant_type` is the type of the code that was delivered (i.e., an `authorization_code`). The `redirect_uri` is the URI where the *Access Tokens* will be delivered. The `client_id` and the `client_secret` authenticate the client. They can be delivered via an Authorization header or as parameters in the body of the request.
 7. Assuming that the Client is allowed to make requests, the AS issues to the Client an Access Token. The AS may also issue a Refresh Token. The refresh token enables the Client to obtain new access tokens; e.g. when the old ones expire.
 
-    ```http
+    ```json
     X-Powered-By: Express
     Content-Type: application/json
     Cache-Control: no-store
@@ -277,7 +283,11 @@ The classic ```photoprint``` web application uses the Authorization Code Grant. 
     Connection: close
     Content-Length: 64
 
-    {"access_token":"ylSkZIjbdWybfs4fUQe9BqP0LH5Z","expires_in":1800,"token_type":"Bearer"}
+    {
+      "access_token":"ylSkZIjbdWybfs4fUQe9BqP0LH5Z",
+      "expires_in":1800,
+      "token_type":"Bearer"
+    }
     ```
 
     The server responds with an access token that the `photoprint` application can use to make calls to the API of the gallery site (which offer access to Vivian’s pictures). Vivian is the Resource Owner, her pictures are Protected Resources (PRs), while the gallery site is the Resource Server (RS).
