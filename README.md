@@ -8,7 +8,9 @@ We show how to use OAuth 2.0 securely when using
 - a [Single Page Application](#single-page-application-implicit-grant-flow), and
 - a [Mobile Application](#mobile-application-authorization-code-grant-with-pkce)
 
-as clients. For each of these clients, we  elaborate on the overall design, implement that design using the MEAN stack, and touch upon common security mistakes.
+as clients. For each of these clients, we  elaborate on the overall design, implement that design using the MEAN stack, and touch upon common security mistakes. 
+
+Follow along by installing the [insecure applications](https://github.com/koenbuyens/Damn-Vulnerable-OAuth-2.0-Applications/blob/master/insecureapplication/README.md).
 
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
