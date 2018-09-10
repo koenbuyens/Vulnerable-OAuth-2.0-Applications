@@ -445,11 +445,6 @@ function serialize() {...}
 function deserialize() {...}
 ```
 
-#### Photoprint
-
-Incidentally, the `photoprint` web application also uses the MEAN stack. The print application is a fairly simple application.
-TODO implement obtaining a profile, authenticating, and storing orders (to illustrate OpenId connect).
-
 ### Architect, Developer, and Pentester: Security Considerations
 
 In this section, we present common security mistakes made when designing/implementing an OAuth 2.0 enabled application. This section lists a subset of what is listed in [RFC 6819](https://tools.ietf.org/html/rfc6819).
@@ -842,3 +837,11 @@ Partially taken from [https://oauth.net/2/](https://oauth.net/2/).
 - [OpenID Connect](http://openid.net/connect/)
 - [UMA](https://docs.kantarainitiative.org/uma/rec-uma-core.html)
 - [IndieAuth](https://indieauth.spec.indieweb.org/)
+
+## TODOs
+
+- Photoprint: implement obtaining a profile, authenticating, and storing orders (to illustrate OpenId connect).
+- Gallery: refresh token, support for other grants.
+- Classic Web App: remaining security considerations.
+- Mobile Application: all
+- SPA: all
