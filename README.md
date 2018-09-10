@@ -60,7 +60,6 @@ a [Single Page Application](#single-page-application-implicit-grant-flow), and a
   - [Design of First Party Mobile Application Client](#design-of-first-party-mobile-application-client)
   - [Implementation of First Party Mobile Application Client](#implementation-of-first-party-mobile-application-client)
   - [Security Considerations of First Party Mobile Application Client](#security-considerations-of-first-party-mobile-application-client)
-    - [OpenID Connect](#openid-connect)
 - [Checklists](#checklists)
   - [For Architects](#for-architects)
   - [For Software Engineers](#for-software-engineers)
@@ -685,7 +684,7 @@ RFC 6819 elaborates on common security mistakes within OAuth 2.0.
 
 TODO security considerations
 
-#### OpenID Connect
+## OpenID Connect
 
 Moreover, OAuth is the foundation for the single sign-on protocol OpenID Connect. OpenID
 Connect builds upon OAuth and provides clearly defined interfaces for user
