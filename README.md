@@ -1,4 +1,4 @@
-# OAuth 2.0 - Secuirty Considerations
+# OAuth 2.0 - Security Considerations
 
 ## TL;DR
 
