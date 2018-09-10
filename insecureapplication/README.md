@@ -1,6 +1,6 @@
 # Damn Vulnerable OAuth 2.0 Applications
 
-This project contains vulnerable OAuth 2.0 applications.
+This project contains a vulnerable OAuth 2.0 server (`gallery`), a vulnerable OAuth 2.0 classic web application client (`photoprint`), and an attackers site exploiting it all (`attacker`).
 
 To run the applications:
 1. Edit your hosts file to include photoprint and gallery. If you want to check some of the attacks, also add attacker.
