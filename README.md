@@ -1,4 +1,4 @@
-# OAuth 2.0 - Damn Vulnerable OAuth 2.0 Applications
+# Damn Vulnerable OAuth 2.0 Applications
 
 ## TL;DR
 
