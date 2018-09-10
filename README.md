@@ -221,7 +221,7 @@ The classic ```photoprint``` web application uses the Authorization Code Grant. 
 Besides selecting the authorization code grant for our classic web application, we made the following design decisions:
 
 - we allow the usage of refresh tokens as we want to avoid that users need to authenticate every time the access tokens expire.
-- we use custom handle-based tokens that are added as a Bearer header as we do not like JWTs.
+- we use custom handle-based tokens that are added as a Bearer header as we have one big monolythic application.
 - we combine the Authorization Server and Resource Server into one as we have a simple application.
 
 ![Authorization code flow](./pics/generalflow.gif)
