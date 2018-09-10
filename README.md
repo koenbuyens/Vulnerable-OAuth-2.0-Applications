@@ -775,7 +775,39 @@ TODO
 
 ### For Testers
 
-TODO
+- Identify the locations of the different endpoints. Most OAuth servers with openID/Connect support publish the locations of their endpoints at https://[base-server-url]/.well-known/openid-configuration or at https://[base-server-url]/.well-known/oauth-authorization-server.
+- Authorization Endpoint
+  - [ ] Open redirect at the `redirect_uri` parameter of the Authorization Endpoint.
+  - [ ] Check entropy of authorization codes at the Authorization Endpoint. Alternatively, try bruteforcing them.
+  - [ ] Validate whether you can request more scope than permissable for your client.
+- Token Endpoint
+  - [ ] Validate whether authorization codes are expired within 30 minutes if unused.
+  - [ ] Validate whether authorization codes can only be used once.
+  - [ ] Validate whether authorization codes can be exchanged for access tokens by a different client.
+  - [ ] Check whether client secrets are passed in request body or Authorization header.
+  - [ ] Check entropy of client secret.
+  - [ ] Validate whether Client ID and secret are validated.
+  - [ ] Check whether refresh tokens expire within 1 year (depends on appetite for business risk; anything between a day and 1 year is acceptable).
+  - [ ] Check whether a different client can exchange the refresh token than the one that obtained it.
+  - [ ] Check whether rate limiting has been implemented (to avoid bruteforce of credentials, authorization codes, or refresh tokens).
+  - [ ] Check whether the client is not locked out on bruteforce attacks against the client secret.
+  - [ ] Check entropy of generated handle-based access and refresh tokens.
+  - [ ] Check whether access and refresh tokens are in the response body.
+  - [ ] Check whether the response has appropriate caching headers. 
+  - [ ] Check whether 
+- Resource Server
+  - [ ] Check whether access tokens expire within 1 hour.
+  - [ ] Check whether access and refresh tokens are in a request header or a request body.
+  - [ ] Check whether invalid tokens are rejected.
+    - [ ] expired
+    - [ ] revoked 
+    - JWTs
+      - [ ] generated for different resource server
+      - [ ] signed by a different issuer (e.g. yourself).
+      - [ ] revoked signing key/certificate
+      - [ ] signed with the none algorithm
+      - [ ] signed using symmetric algorithm and the public key as secret key 
+  - [ ] Check whether you can access an API that requires scope that you do not have.
 
 ## Conclusion
 
