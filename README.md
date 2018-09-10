@@ -202,7 +202,7 @@ If you are using a micro-service oriented architecture, it is best practice to s
 
 In this Section, we elaborate on using OAuth 2.0 with a classic web application as Client: we introduce the overall design, implement that design, and touch upon common security mistakes made during design and implementation.
 
-In our running example, the third-party website `photoprint` enables users to print the pictures hosted at our gallery site. In the real world, we typically do not control how the `photoprint` application uses our API, and therefore we stipulate the (security) requirements that our partner `photoprint` must implement in a Business Requirements Document (BRD). Additionally, we may verify that the `photoprint` application implements those requirements correctly by performing a security code review or a penetration test.
+In our running example, the third-party website `photoprint` enables users to print the pictures hosted at our gallery site. The `photoprint` application uses the *Authorization Code Grant*. In the real world, we typically do not control how the `photoprint` application uses our API, and therefore we stipulate the (security) requirements that our partner `photoprint` must implement in a Business Requirements Document (BRD). Additionally, we may verify that the `photoprint` application implements those requirements correctly by performing a security code review or a penetration test.
 
 ### Architect: Design
 
@@ -215,11 +215,12 @@ We made the following OAuth 2.0-related design decisions for the `gallery` appli
 
 We not only made OAuth 2.0-related design decisions, but also related to the technology stack:
 
-- the `gallery` application has a simple REST API: POST (create), GET (read), UPDATE (modify), and DELETE for `images`,`users`, and `albums`. A gallery is the albums and pictures belonging to a user. Users can login via the `login` endpoint. Besides gallery-related functionality, the API also supports the OAuth 2.0-related endpoints: token endpoint (`token`) and the authorization endpoint (`authorize`).
+- the `gallery` application has a simple REST API: POST (create), GET (read), UPDATE (modify), and DELETE for `images`,`users`, and `albums`. A gallery is the albums and pictures belonging to a user. Users can login via the `login` endpoint. Besides gallery-related functionality, the API also supports the OAuth 2.0-related endpoints: the token endpoint (`token`) and the authorization endpoint (`authorize`).
 - the `gallery` application uses the [MEAN stack](http://mean.io/). The application uses [`express.js`](https://expressjs.com/) on top of  [`node.js`](https://nodejs.org/en/) and stores data in [`MongoDB`](https://www.mongodb.com/).
 
-The interactions between `gallery` and `photoprint` are as follows (major use case).
 ![Authorization Code Grant](./pics/AuthorizationCodeGrant.png)
+
+The interactions between `gallery` and `photoprint` are as follows (major use case).
 
 1. A user, let's call her Vivian, navigates to the printing website. This website is called the `Client`. Vivian uploaded the pictures to picture gallery site (Gallery). The printing website (client, `photoprint`) offers the possibility to obtain pictures from the gallery site via a button that says *“Print pictures from the gallery site”*. Vivian clicks that button.
     ![The Print Button on photoprint.](./pics/printpicturesfromgallery.png)
@@ -235,6 +236,7 @@ The interactions between `gallery` and `photoprint` are as follows (major use ca
 
     As you notice, the URI contains the parameters `redirect_uri`, `scope`, `response_type`, and `client_id`. The `redirect_uri` is where `gallery` will redirect Vivian after having created an authorization code. The `scope` is the access level that the client needs (`view_gallery` is a custom scope that enables clients to view the pictures from a user's gallery). The `response_type` is `code` as we want an authorization code. The `client_id` is an identifier that represents the `photoprint` application.
 3. That server allows Vivian to authenticate to the gallery site and asks her if she consents to the Client accessing her pictures.
+    ![Vivian can authenticate to the gallery site.](./pics/authcodegrant-dialog.png)
 4. Assuming that Vivian gives her consent, the AS generates an Authorization Code (Authorization Grant) and sends it back to Vivian’s browser with a redirect command toward the return URL specified by the Client.
 
     ```http
