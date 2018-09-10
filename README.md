@@ -204,7 +204,7 @@ In this Section, we elaborate on using OAuth 2.0 with a classic web application 
 
 In our running example, the third-party website `photoprint` enables users to print the pictures hosted at our gallery site.  This printing site uses the Authorization Code Grant. In the real world, we typically do not control how the `photoprint` application uses our API, and therefore we stipulate the (security) requirements that our partner `photoprint` must implement in a Business Requirements Document (BRD). Additionally, we may verify that the `photoprint` application implements those requirements correctly by performing a security code review or a penetration test.
 
-### Design
+### Architect: Design
 
 The classic ```photoprint``` web application uses the Authorization Code Grant. This flow consists of the following steps.
 
@@ -226,7 +226,7 @@ Besides selecting the authorization code grant for our classic web application, 
 
 ![Authorization code flow](./pics/generalflow.gif)
 
-### Insecure Implementation
+### Developer: Insecure Implementation
 
 #### Gallery
 
@@ -500,12 +500,12 @@ passport.use(new BearerStrategy(
     }); }));
 ```
 
-#### Print
+#### Photoprint
 
 Incidentally, the `photoprint` web application also uses the MEAN stack. The print application is a fairly simple application.
 TODO implement obtaining a profile, authenticating, and storing orders (to illustrate OpenId connect).
 
-### Security Considerations
+### Architect, Developer, and Pentester: Security Considerations
 
 In this section, we present common security mistakes made when designing/implementing an OAuth 2.0 enabled application. This section lists a subset of what is listed in [RFC 6819](https://tools.ietf.org/html/rfc6819).
 
@@ -692,21 +692,21 @@ Validate this during a code review.
 
 The proof key for code exchange TODO [https://tools.ietf.org/html/rfc7636](https://tools.ietf.org/html/rfc7636)
 
-### Design of an OAuth 2.0 Mobile Application
+### Architect: Design of an OAuth 2.0 Mobile Application
 
 TODO design content
 
-### Implementation of an OAuth 2.0 Mobile Application
+### Developer: Insecure Implementation of an OAuth 2.0 Mobile Application
 
 RFC 6819 elaborates on common security mistakes within OAuth 2.0.
 
-### Testing of an OAuth 2.0 Mobile Application
+### Architect, Developer, Penetration Tester: Security Considerations of an Mobile Application Client
 
 TODO
 
 ### Single Page Application: Implicit Grant Flow
 
-#### Design of OAuth 2.0 SPA Client
+#### Architect: Design of OAuth 2.0 SPA Client
 
 TODO pic.
 
@@ -719,17 +719,17 @@ an authorization code. In our running example, it would look as follows.
 3. Assuming that Vivian gives her consent, the AS generates an Access Token and sends it back to Vivian’s browser with a redirect command toward the return URL specified by the Client. The Access Token is part of that URL.
 4. The browser honors the redirect and passes the Access Token to the Client. The Client can access the PR; Vivian's pictures with the Access Token.
 
-### Implementation of OAuth 2.0 SPA Client
+### Developer: Implementation of OAuth 2.0 SPA Client
 
 RFC 6819 elaborates on common security mistakes within OAuth 2.0.
 
-### Testing of OAuth 2.0 SPA Client
+### Architect, Developer, Penetration Tester: Security Considerations of a SPA Client
 
 TODO testing
 
 ## First Party Mobile Application: Resource Owner Password Credentials Flow
 
-### Design of First Party Mobile Application Client
+### Architect: Design of First Party Mobile Application Client
 
 The resource owner password credentials grant is a simplified flow in which the client uses the
 resource owner password credentials (username and password) to obtain an access token. In our
@@ -742,11 +742,11 @@ TODO pic
 1. The AS generates an Access Token and sends it back to the Client.
 1. The Client can access the Resource Server; Vivian's pictures with the Access Token
 
-### Implementation of First Party Mobile Application Client
+### Developer: Implementation of First Party Mobile Application Client
 
 RFC 6819 elaborates on common security mistakes within OAuth 2.0.
 
-### Security Considerations of First Party Mobile Application Client
+### Architect, Developer, Penetration Tester: Security Considerations of a First Party Mobile Application Client
 
 TODO security considerations
 
