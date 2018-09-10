@@ -218,13 +218,13 @@ The classic ```photoprint``` web application uses the Authorization Code Grant. 
 6. Assuming that the Client is allowed to make requests, the AS issues to the Client an Access Token, which can be used to make calls to the API of the gallery site (which offer access to Vivian’s pictures). Vivian is the Resource Owner, her pictures are Protected Resources (PRs), while the gallery site is the Resource Server (RS). The AS may also issue a Refresh Token. The refresh token enables the Client to obtain new access tokens; e.g. when the old ones expire.
 7. The Client can finally access the PR; Vivian's pictures.
 
+![Authorization code flow](./pics/generalflow.gif)
+
 Besides selecting the authorization code grant for our classic web application, we made the following design decisions:
 
 - we allow the usage of refresh tokens as we want to avoid that users need to authenticate every time the access tokens expire.
 - we use custom handle-based tokens that are added as a Bearer header as we have one big monolythic application.
 - we combine the Authorization Server and Resource Server into one as we have a simple application.
-
-![Authorization code flow](./pics/generalflow.gif)
 
 ### Developer: Insecure Implementation
 
