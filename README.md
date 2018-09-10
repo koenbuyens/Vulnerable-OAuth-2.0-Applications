@@ -612,23 +612,41 @@ Alternatively, bruteforce the tokens at the resource server if you have a compro
 
 ##### Token Endpoint: Store Handle-Based Access and Refresh Tokens Securely
 
-If the handle-based tokens are stored as plain text, an attacker may be able to obtain them from the database at the resource server or the token endpoint (e.g. .
+If the handle-based tokens are stored as plain text, an attacker may be able to obtain them from the database at the resource server or the token endpoint.
+
+To remediate this, hash the tokens before storing them using a strong hashing algorithm. When validating the token, hash the incoming token and validate whether that hashed value exists in the database.
+
+To validate this as a tester, perform a NoSQL injection and validate whether the tokens have been stored unhashed. It is better to validate this using a code review.
 
 ##### Token Endpoint: Expire Access and Refresh Tokens
 
-TODO
+Expiring access and refresh tokens limits the window in which an attacker can use captured or guessed tokens.
+
+To remediate this, expire access tokens 15-30 minutes after they have been generated. Refresh tokens can be valid for much longer. The actual amount depends on the risk profile of the application.
+
+To validate this as a tester, obtain an access token but only redeem it after 31 minutes.
 
 ##### Token Endpoint: Store Client Secrets Securely
 
-TODO
+If the client secrets are stored as plain text, an attacker may be able to obtain them from the database at the resource server or the token endpoint.
+
+To remediate this, store the client secrets like you would store user passwords: hashed with a strong hashing algorithm such as bcrypt, scrypt, or pbkdf2. When validating the secret, hash the incoming secret and compare it against the one stored in the database for that client.
+
+To validate this as a tester, perform a NoSQL injection and validate whether the secrets have been stored unhashed. It is better to validate this using a code review.
 
 ##### Use Strong Client Secrets
 
-TODO
+If the client secrets are weak, an attacker may be able to guess them at the resource server or the token endpoint.
+
+To remediate this, generate secrets with a length of at least 128 bit using a secure pseudo-random number generator that is seeded properly. Most mature OAuth 2.0 frameworks implement this correctly.
+
+To validate this as a tester, analyze the entropy of multiple captured secrets. Note that it is hard to capture secrets for clients that are classic web applications as these secrets are communicated via a back-channel.
 
 ##### Implement Rate-Limiting
 
-TODO
+To prevent bruteforcing, OAuth 2.0 endpoints should implement rate limiting as it slows down an attacker.
+
+To validate this as a tester, try any of the previously listed bruteforcing attacks.
 
 ##### Token Endpoint: Bind Refresh Token to Client
 
@@ -648,13 +666,25 @@ TODO
 
 #### Photoprint OAuth 2.0 Client
 
-##### Store Client Secrets Securely
+##### CSRF
 
 TODO
+
+##### Store Client Secrets Securely
+
+If the client secrets are stored insecurely, an attacker may be able to obtain them.
+
+To remediate this, store the secrets using secure storage offered by the technology stack (typically encrypted). Keep these secrets out of version repositories.
+
+Validate this during a code review.
 
 ##### Store Access and Refresh Tokens Securely
 
-TODO
+If the handle-based tokens are stored as plain text in a database, an attacker may be able to obtain them from the database at the client.
+
+To remediate this, keep the access tokens in memory and store the refresh tokens using secure storage offered by the technology stack (typically encrypted).
+
+Validate this during a code review.
 
 ## Mobile Application: Authorization Code Grant with PKCE
 
