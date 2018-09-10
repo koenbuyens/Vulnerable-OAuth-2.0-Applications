@@ -4,7 +4,7 @@ This project contains the code resulting from my experimentation with express-oa
 
 To run the applications.
 
-First edit your hosts file to include photoprint and gallery.
+First edit your hosts file to include photoprint and gallery. If you want to check some of the attacks, also add attacker.
 
 ```bash
 127.0.0.1           gallery photoprint attacker localhost
