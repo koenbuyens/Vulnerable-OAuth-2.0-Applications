@@ -1,4 +1,4 @@
-# Project Setup
+# Damn Vulnerable OAuth 2.0 Applications
 
 This project contains the code resulting from my experimentation with express-oauth2orize and the oauth2 protocol.
 
