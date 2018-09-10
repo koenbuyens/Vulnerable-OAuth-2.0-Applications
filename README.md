@@ -226,7 +226,7 @@ The classic ```photoprint``` web application uses the Authorization Code Grant. 
 3. That server allows Vivian to authenticate to the gallery site and asks her if she consents to the Client accessing her pictures.
 4. Assuming that Vivian gives her consent, the AS generates an Authorization Code (Authorization Grant) and sends it back to Vivian’s browser with a redirect command toward the return URL specified by the Client.
 
-    ```html
+    ```http
     HTTP/1.1 302 Found
     X-Powered-By: Express
     Location: http://photoprint:3000/callback?
@@ -259,7 +259,7 @@ The classic ```photoprint``` web application uses the Authorization Code Grant. 
     The Authorization Code is part of that URL.
 6. The Client forwards that Authorization Code together with its own credentials to the AS (Token Endpoint). From this step on, the interactions are server-to-server. The Authorization Code proves that Vivian consented to the actions that the Client wants to do. Moreover, the message contains the Client’s own credentials (the Client ID and the Client Secret).
 
-    ```html
+    ```http
     POST /oauth/token HTTP/1.1
     Accept: application/json
     host: gallery:3005
