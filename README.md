@@ -206,8 +206,19 @@ In our running example, the third-party website `photoprint` enables users to pr
 
 ### Architect: Design
 
-The classic ```photoprint``` web application uses the Authorization Code Grant. This flow consists of the following steps.
+We made the following OAuth 2.0-related design decisions for the `gallery` application:
 
+- the application supports the Authorization Code Grant as its major client,  `photoprint`, is a classic web application.
+- we allow the usage of refresh tokens as we want to avoid that users need to authenticate every time the access tokens expire.
+- we use custom handle-based tokens that are added as a Bearer header as `gallery` is a monolythic application.
+- we combine the Authorization Server and Resource Server into one as `gallery` is a simple application.
+
+We not only made OAuth 2.0-related design decisions, but also related to the technology stack:
+
+- the `gallery` application has a simple REST API: POST (create), GET (read), UPDATE (modify), and DELETE for `images`,`users`, and `albums`. A gallery is the albums and pictures belonging to a user. Users can login via the `login` endpoint. Besides gallery-related functionality, the API also supports the OAuth 2.0-related endpoints: token endpoint (`token`) and the authorization endpoint (`authorize`).
+- the `gallery` application uses the [MEAN stack](http://mean.io/). The application uses [`express.js`](https://expressjs.com/) on top of  [`node.js`](https://nodejs.org/en/) and stores data in [`MongoDB`](https://www.mongodb.com/).
+
+The interactions between `gallery` and `photoprint` are as follows (major use case).
 ![Authorization Code Grant](./pics/AuthorizationCodeGrant.png)
 
 1. A user, let's call her Vivian, navigates to the printing website. This website is called the `Client`. Vivian uploaded the pictures to picture gallery site (Gallery). The printing website (client, `photoprint`) offers the possibility to obtain pictures from the gallery site via a button that says *“Print pictures from the gallery site”*. Vivian clicks that button.
@@ -341,17 +352,6 @@ The classic ```photoprint``` web application uses the Authorization Code Grant. 
 
 The overall flow looks thus as follows.
 ![Authorization code flow](./pics/generalflow.gif)
-
-Besides selecting the authorization code grant for our classic web application, we made the following OAuth 2.0-related design decisions:
-
-- we allow the usage of refresh tokens as we want to avoid that users need to authenticate every time the access tokens expire.
-- we use custom handle-based tokens that are added as a Bearer header as we have one big monolythic application.
-- we combine the Authorization Server and Resource Server into one as we have a simple application.
-
-We not only made OAuth 2.0-related design decisions, but also related to the technology stack:
-
-- the `gallery` application has a simple REST API: POST (create), GET (read), UPDATE (modify), and DELETE for `images`,`users`, and `albums`. A gallery is the albums and pictures belonging to a user. Users can login via the `login` endpoint. Besides gallery-related functionality, the API also supports the OAuth 2.0-related endpoints: token endpoint (`token`) and the authorization endpoint (`authorize`).
-- the `gallery` application uses the [MEAN stack](http://mean.io/). The application uses [`express.js`](https://expressjs.com/) on top of  [`node.js`](https://nodejs.org/en/) and stores data in [`MongoDB`](https://www.mongodb.com/).
 
 ### Developer: Insecure Implementation
 
