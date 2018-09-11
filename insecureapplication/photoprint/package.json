@@ -1,24 +1,24 @@
 {
   "name": "photoprint",
   "version": "1.0.0",
-  "description": "A demo app for the oauth2 protocol. This app is the consumer (client).",
+  "description": "Damn Vulnerable OAuth Applications - OAuth 2.0 Client - Printing Application",
   "main": "app.js",
   "dependencies": {
-    "body-parser": "^1.15.2",
+    "body-parser": "^1.18.3",
     "cookie-parser": "^1.4.3",
-    "express-session": "^1.14.1",
-    "express": "^4.14.0",
-    "jade": "^1.11.0",
-    "node-rest-client": "^2.0.1",
-    "simple-oauth2": "^1.0.0"
+    "express": "^4.16.3",
+    "express-session": "^1.15.6",
+    "node-rest-client": "^2.5.0",
+    "pug": "^2.0.3",
+    "simple-oauth2": "^1.6.0"
   },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js"
   },
-  "author": "Koen Buyens",
-  "license": "ISC",
+  "author": "Koen Buyens <koen@buyens.org>",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/koenbuyens/oauth.git"

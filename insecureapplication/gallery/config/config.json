@@ -3,9 +3,9 @@
     "secret":"changethistoconfigfile"
   },
   "mongodb": {
-    "url": "mongodb://localhost/gallery2",
+    "url": "mongodb://mongodb/gallery2",
     "options": {
-      "useMongoClient": true
+      "useNewUrlParser": true
     }
   },
   "token":{

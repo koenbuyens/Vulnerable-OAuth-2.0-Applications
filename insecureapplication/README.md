@@ -3,17 +3,18 @@
 This project contains a vulnerable OAuth 2.0 server ([gallery](./gallery)), a vulnerable OAuth 2.0 classic web application client ([photoprint](./photoprint)), and an attackers site exploiting it all ([attacker](./attacker)).
 
 To run the applications:
+
 1. Edit your hosts file to include photoprint and gallery ([Windows](https://support.rackspace.com/how-to/modify-your-hosts-file/), [Linux](https://vitux.com/linux-hosts-file/), [Mac OSX](https://www.imore.com/how-edit-your-macs-hosts-file-and-why-you-would-want)). If you want to check some of the attacks, also add attacker.
 
     ```bash
-    127.0.0.1           gallery photoprint attacker localhost
+    127.0.0.1           gallery photoprint attacker mongodb localhost
     ```
 2. Import the mongodb database
 
     ```bash
     cd gallery/mongodbdata
     mongorestore -d gallery2 gallery2/
-   ```
+    ```
 
 3. Install the servers:
 
@@ -27,7 +28,7 @@ To run the applications:
     cd attacker
     npm install
     ```
-    
+
 4. Start the servers:
 
     ```bash

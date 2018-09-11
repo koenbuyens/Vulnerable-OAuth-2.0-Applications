@@ -1,0 +1,46 @@
+version: '3'
+services:
+  gallery:
+    build: gallery/.
+    container_name: "gallery"
+    ports:
+      - "3005:3005"
+    depends_on:
+      - mongoseed
+  mongodb:
+    image: mongo:latest
+    container_name: "mongodb"
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+#    volumes:
+#      - mongodb:/data/db
+    ports:
+      - 27017:27017
+    command: mongod --smallfiles # --logpath=/dev/null # --quiet
+  mongoseed:
+    container_name: "mongoseed"
+    build: ./mongo-seed
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+    depends_on:
+      - mongodb
+    command: mongorestore --host mongodb:27017 -d gallery2 mongodbdata/gallery2
+  photoprint:
+    build: photoprint/.
+    container_name: "photoprint"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - gallery
+  attacker:
+    build: attacker/.
+    container_name: "attacker"
+    ports:
+      - "1337:1337"
+    depends_on:
+      - gallery
+      - photoprint
+#volumes:
+#  mongodb: 

@@ -51,7 +51,7 @@ app.get('/callback', function(req, res) {
   client.authorizationCode.getToken(tokenConfig,
       function(error, result) {
         if (error) {
-          return res.send('Access Token Error', error.message);
+          return res.send('Access Token Error: ' + error.message);
         }
         let token = client.accessToken.create(result);
         console.log('Token: ' + JSON.stringify(token));
