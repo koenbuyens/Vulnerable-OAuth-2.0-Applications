@@ -453,10 +453,10 @@ In this section, we present common security mistakes made when designing/impleme
 
 If the authorization server does not validate that the redirect URI belongs to the client, it is susceptible to two types of attacks:
 
-- Open Redirect. ![Attacker redirects the victim the victim to a random site.](./pics/openredirect.gif)
+- [Open Redirect](https://www.owasp.org/index.php/Unvalidated_Redirects_and_Forwards_Cheat_Sheet). ![Attacker redirects the victim the victim to a random site.](./pics/openredirect.gif)
 - Stealing of Authorization Codes. ![Attacker steals a valid authorization code from the victim.](./pics/openredirect_stealauthzcode.gif)
 
-To remediate this, validate whether the redirect_uri parameter is one the client provided during the registration process.
+To remediate this, validate whether the `redirect_uri` parameter is one the client provided during the registration process.
 
 To validate this as a tester, do the following:
 
