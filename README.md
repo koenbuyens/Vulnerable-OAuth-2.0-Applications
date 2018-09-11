@@ -455,13 +455,29 @@ If the authorization server does not validate that the redirect URI belongs to t
 
 - [Open Redirect](https://www.owasp.org/index.php/Unvalidated_Redirects_and_Forwards_Cheat_Sheet). ![Attacker redirects the victim the victim to a random site.](./pics/openredirect.gif)
 - Stealing of Authorization Codes. ![Attacker steals a valid authorization code from the victim.](./pics/openredirect_stealauthzcode.gif)
+- XSS
 
-To remediate this, validate whether the `redirect_uri` parameter is one the client provided during the registration process.
+To remediate this, validate whether the `redirect_uri` parameter is one the client provided during the registration process. The match should be an exact match.
 
 To validate this as a tester, do the following:
 
 1. Capture the URL that the OAuth 2.0 client uses to talk with the authorization endpoint.  `http://gallery:3005/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Fphotoprint%3A3000%2Fcallback&scope=view_gallery&client_id=photoprint`
 2. Change the value of the redirect_uri parameter to one you control.  `http://gallery:3005/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Fattacker%3A1337%2Fcallback&scope=view_gallery&client_id=photoprint`
+    One can use many payloads, including but not limited to.
+    - XSS:
+        - data%3Atext%2Fhtml%2Ca&state=<script>alert('XSS')
+        - javascript://https://evil.com/?z=%0Aalert(1)
+    - Bypass validation:
+      - External accepted url:
+        - https://accounts.google.com/BackToAuthSubTarget?next=https://evil.com 
+        - https%3A%2F%2Fapps.facebook.com%2Fattacker%2F 
+      - regexes:
+        - http://example.com%2f%2f.victim.com
+        - http://example.com%5c%5c.victim.com
+        - http://example.com%3F.victim.com
+        - http://example.com%23.victim.com
+        - http://victim.com:80%40example.com
+        - http://victim.com%2eexample.com
 
 ##### Authorization Endpoint: Generate Strong Authorization Codes
 
@@ -879,6 +895,11 @@ Partially taken from [https://oauth.net/2/](https://oauth.net/2/).
 - [OpenID Connect](http://openid.net/connect/)
 - [UMA](https://docs.kantarainitiative.org/uma/rec-uma-core.html)
 - [IndieAuth](https://indieauth.spec.indieweb.org/)
+
+
+### Security/Penetration Testing
+
+#### URI Redirect Bypass
 
 ## TODOs
 
