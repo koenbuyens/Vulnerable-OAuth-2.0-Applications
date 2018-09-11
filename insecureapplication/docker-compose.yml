@@ -17,7 +17,7 @@ services:
 #      - mongodb:/data/db
     ports:
       - 27017:27017
-    command: mongod --smallfiles # --logpath=/dev/null # --quiet
+    command: mongod --smallfiles --logpath=/dev/null # --quiet
   mongoseed:
     container_name: "mongoseed"
     build: ./mongo-seed
@@ -42,5 +42,10 @@ services:
     depends_on:
       - gallery
       - photoprint
+  selenium:
+    image: selenium/standalone-firefox-debug:latest
+    ports:
+      - "4444:4444"
+      - "5900:5900"
 #volumes:
 #  mongodb: 
