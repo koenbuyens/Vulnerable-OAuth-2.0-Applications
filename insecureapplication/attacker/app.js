@@ -39,9 +39,10 @@ function makeRequest(options) {
   return new Promise(function(resolve, reject){
     //using a leaked secret
     request(options, function(err, response, body){
-      if(err) reject(err);
+      if(err) return reject(err);
+      if(response == undefined || response == null) return reject('undefined'); 
       if (response.statusCode != 200) {
-        reject('Invalid status code <' + response.statusCode + '>');
+        return reject('Invalid status code <' + response.statusCode + '>');
       }
       resolve(body);
     });
@@ -50,8 +51,8 @@ function makeRequest(options) {
 
 
 app.get('/guessauthzcode', async function(req, res){
-  searchSpace = 10000;
-  maxGuesses = 100;
+  searchSpace = 100000;
+  maxGuesses = 10000;
   codes = [];
   for(i = 0; i < maxGuesses; i++) {
     randomguess = Math.floor(Math.random()*Math.floor(searchSpace));
@@ -79,7 +80,7 @@ app.get('/guessauthzcode', async function(req, res){
 
 app.get('/guessaccesstokenatresourceserver', async function(req, res){
   searchSpace = 100000;
-  maxGuesses = 100;
+  maxGuesses = 10000;
   tokens = [];
   for(i = 0; i < maxGuesses; i++) {
     randomguess = Math.floor(Math.random()*Math.floor(searchSpace));
@@ -104,7 +105,6 @@ async function getPictureUrls2(access_token) {
     return [];
   }
   options2 = {
-    'proxy':'http://localhost:8080',
     'method':'get',
     'headers':{
       "Accept": "application/json"
@@ -167,7 +167,7 @@ app.get('/hashtokens', async function(req, res){
 
   }catch (error) {
     console.error(error);
-    res.status(500).render(error);
+    res.status(500).render('error');
   }
 });
 

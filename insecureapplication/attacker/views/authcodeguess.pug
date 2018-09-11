@@ -3,6 +3,9 @@ extends layout
 block content
   .container
     h2 Authorization Code
-    p I guessed the following valid authorization codes:
-      each code in codes
-        li='code: '+ code.code + ", token: " + code.token
+    if codes.length > 0
+      p I guessed the following valid authorization codes at the token endpoint:
+        each code in codes
+          li='code: '+ code.code + ", token: " + code.token
+    else
+      p Unfortunately, I was not able to bruteforce authorization codes.

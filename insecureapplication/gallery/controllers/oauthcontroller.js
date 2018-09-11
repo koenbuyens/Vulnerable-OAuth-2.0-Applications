@@ -140,8 +140,12 @@ function exchangecode(client, code, redirectURI, done) {
     // vulnerability: the token is logged
     console.log('Access Token: ' + token);
     let refreshtoken = Math.floor(Math.random() * (100000-1) +1) + '';
-    let needsrefresh = authCode.scope.includes('offline_access');
-
+    let needsrefresh = null;
+    if (authCode.scope == null || authCode.scope == undefined) {
+      needsrefresh = false;
+    } else {
+      needsrefresh = authCode.scope.includes('offline_access');
+    }
     new AccessToken({
       clientID: authCode.clientID,
       user: authCode.user,
@@ -201,6 +205,7 @@ function exchangerefreshtoken(client, mytoken, scope, done) {
   const MongoClient = require('mongodb').MongoClient;
   let query = '{"$where": "function() { return this.token == '+mytoken +'; }"}';
   MongoClient.connect(config.mongodb.url, function(err, db) {
+    if (err) console.log(err); return done(false);
     db.collection('refreshtokens').find(JSON.parse(query)).
         toArray(function(err, allrefs) {
           if (err) {
