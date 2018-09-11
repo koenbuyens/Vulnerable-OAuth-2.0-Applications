@@ -71,6 +71,7 @@ passport.use(new ClientPasswordStrategy(
  */
 passport.use(new BearerStrategy(
     function(accessToken, done) {
+      // insecure: logs access token
       console.log(accessToken);
       AccessToken.findOne({token: accessToken}, function(err, token) {
         // vulnerability: logs access token

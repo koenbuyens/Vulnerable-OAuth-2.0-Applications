@@ -1,15 +1,14 @@
 p Hi #{user.username},
 p #[b() #{client.name}] wants to 
-  if client.scope
-    for scope in client.scope
-      li scope  
-  else
-    b access your gallery.
+  ul
+    each item in scope
+      li #{scopeMap[item]}
 
 p Do you approve?
 form(action='/oauth/authorize/decision', method='post')
   input(name='transaction_id', type='hidden', value='#{transactionID}')
-
+  input(name='scope', type='hidden', value=scope.join(','))
+  
   div
     input#allow(type='submit', value='Allow')
     input#deny(type='submit', value='Deny', name='cancel')

@@ -15,6 +15,10 @@
     },
     "authorization": {
       "length":32
+    },
+    "refresh":{
+      "expires_in": 36000000,
+      "length" : 32     
     }
   },
   "scopemap": {
@@ -26,6 +30,7 @@
     "delete_picture" : "Delete your picture",
     "upload_picture" :"Upload a new picture to your gallery",
     "list_users" : "List the users of the application",
+    "offline_access": "Get access to your data even after you log out",
     "*" : "Do anything"
   }
 }

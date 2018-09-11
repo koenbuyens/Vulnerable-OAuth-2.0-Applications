@@ -6,7 +6,7 @@ const expressSession = require('express-session');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 // stores data into mongoDB. It uses mongoose models.
-const mongoose = require('mongoose');
+const mongoose = require('mongoose').set('debug', true);
 // authentication happens with passport and passport strategies
 const passport = require('passport');
 // during dev, it uses the errorhandler package. Erros are logged  with morgan.

@@ -4,6 +4,8 @@ const Client = require('../models/client');
 const User = require('../models/user');
 const AuthorizationCode = require('../models/authorizationcode');
 const AccessToken = require('../models/accesstoken');
+const RefreshToken = require('../models/refreshtoken');
+const config = require('../config/config');
 
 // create OAuth 2.0 server
 let server = oauth2orize.createServer();
@@ -43,6 +45,8 @@ server.exchange(oauth2orize.exchange.authorizationCode(exchangecode));
 // alternative:
 // server.exchange(oauth2orize.exchange.code(exchangecode));
 
+server.exchange(oauth2orize.exchange.refreshToken(exchangerefreshtoken));
+
 /**
  * Makes an authorization decision
  * @param {*} req request
@@ -50,9 +54,10 @@ server.exchange(oauth2orize.exchange.authorizationCode(exchangecode));
  * @return {*} result of invoking the callback function
  */
 function decision(req, done) {
-  // vulnerability: no scope is used
+  // vulnerability when commented out: no scope is used
   // More info: https://tools.ietf.org/html/rfc6819#section-5.1.5.1
-  return done(null);
+  return done(null, {scope: req.oauth2.req.scope});
+  // return done(null);
 }
 
 //
@@ -84,6 +89,7 @@ function grantcode(client, redirectURI, user, response, done) {
     redirectURI: redirectURI,
     user: user.id,
     code: code,
+    scope: response.scope,
   }).save(function(err, result) {
     if (err) {
       return done(err);
@@ -133,12 +139,14 @@ function exchangecode(client, code, redirectURI, done) {
     let token = Math.floor(Math.random() * (100000-1) +1);
     // vulnerability: the token is logged
     console.log('Access Token: ' + token);
+    let refreshtoken = Math.floor(Math.random() * (100000-1) +1) + '';
+    let needsrefresh = authCode.scope.includes('offline_access');
 
     new AccessToken({
       clientID: authCode.clientID,
       user: authCode.user,
       token: token,
-
+      scope: authCode.scope,
     }).save(function(err, result) {
       if (err) {
         return done(
@@ -148,9 +156,81 @@ function exchangecode(client, code, redirectURI, done) {
             )
         );
       }
-      return done(null, token, null);
+      if (needsrefresh) {
+        new RefreshToken({
+          clientID: authCode.clientID,
+          user: authCode.user,
+          token: refreshtoken,
+          scope: authCode.scope,
+        }).save(function(err, result) {
+          if (err) {
+            return done(
+                new oauth2orize.TokenError(
+                    'Error while accessing the token database.',
+                    'server_error'
+                )
+            );
+          }
+        });
+      }
+      if (needsrefresh) {
+        return done(null, token, refreshtoken);
+      } else {
+        return done(null, token, null);
+      }
     });
   });
+}
+
+/**
+ * Exchanges a refresh token for an access token
+ * @param {*} client client ID
+ * @param {*} mytoken refresh token
+ * @param {*} scope scope required
+ * @param {*} done callback invoked when done
+ */
+function exchangerefreshtoken(client, mytoken, scope, done) {
+  // insecure: logs refresh tokens
+  console.log(client);
+  console.log('Refresh Token: ' + mytoken);
+  // insecure: not a strong access token
+  let accesstoken = Math.floor(Math.random() * (100000-1) +1) + '';
+  RefreshToken.findOne({token: mytoken},
+      function(err, reftoken) {
+        if (err) {
+          return done(
+              new oauth2orize.TokenError(
+                  'Error while accessing the token database.',
+                  'server_error'
+              )
+          );
+        }
+        if (reftoken == null || reftoken == undefined) {
+          return done(
+              new oauth2orize.AuthorizationError(
+                  'Invalid Refresh Token.',
+                  'access_denied'
+              )
+          );
+        }
+        new AccessToken({
+          clientID: reftoken.clientID,
+          user: reftoken.user,
+          token: accesstoken,
+          // insecure: attackers can request any scope they want
+          scope: reftoken.scope,
+        }).save(function(err, result) {
+          if (err) {
+            return done(
+                new oauth2orize.TokenError(
+                    'Error while accessing the token database.',
+                    'server_error'
+                )
+            );
+          }
+          return done(null, accesstoken, null);
+        });
+      });
 }
 
 // user authorization endpoint
@@ -166,13 +246,11 @@ function exchangecode(client, code, redirectURI, done) {
  * @param {*} done callback function
  */
 function authorizationValidate(clientID, redirectURI, done) {
-  console.log('CLIENTID: ' + clientID + ' ' + redirectURI);
   Client.findOne({clientID: clientID}, function(err, client) {
     if (err) {
       return done(err);
     }
     // vulnerability: redirectURI is not validated
-    console.log('CLIENT: ' + client);
     if (client != null) {
       return done(null, client, redirectURI);
     }
@@ -202,10 +280,13 @@ function authorizationAutoapprove(client, user, done) {
  * @param {*} res response
  */
 function renderdialog(req, res) {
+  let scopeMap = config.scopemap;
   res.render('dialog', {
     transactionID: req.oauth2.transactionID,
     user: req.user,
     client: req.oauth2.client,
+    scopeMap: scopeMap,
+    scope: req.oauth2.req.scope,
   }
   );
 }
@@ -277,7 +358,7 @@ function wellknown(req, res) {
     'userinfo_endpoint': '',
     'registration_endpoint': '',
     'jwks_uri': '',
-    'scopes_supported': ['profile', 'view_gallery'],
+    'scopes_supported': ['profile', 'view_gallery', 'offline_access'],
     'response_types_supported': ['code', 'token', 'code token'],
     'response_modes_supported': ['query', 'form_post'],
     'grant_types_supported': ['authorization_code', 'refresh_token'],

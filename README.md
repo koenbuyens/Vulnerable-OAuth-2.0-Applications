@@ -769,7 +769,7 @@ TODO
 
 ### For Testers
 
-- Identify the locations of the different endpoints. Most OAuth servers with openID/Connect support publish the locations of their endpoints at https://[base-server-url]/.well-known/openid-configuration or at https://[base-server-url]/.well-known/oauth-authorization-server.
+- Identify the locations of the different endpoints. Most OAuth servers with openID/Connect support publish the locations of their endpoints at [https://[base-server-url]/.well-known/openid-configuration](https://[base-server-url]/.well-known/openid-configuration) or at [https://[base-server-url]/.well-known/oauth-authorization-server](https://[base-server-url]/.well-known/oauth-authorization-server).
 - Authorization Endpoint
   - [ ] Open redirect at the `redirect_uri` parameter of the Authorization Endpoint.
   - [ ] Check entropy of authorization codes at the Authorization Endpoint. Alternatively, try bruteforcing them.
@@ -787,20 +787,19 @@ TODO
   - [ ] Check whether the client is not locked out on bruteforce attacks against the client secret.
   - [ ] Check entropy of generated handle-based access and refresh tokens.
   - [ ] Check whether access and refresh tokens are in the response body.
-  - [ ] Check whether the response has appropriate caching headers. 
-  - [ ] Check whether 
+  - [ ] Check whether the response has appropriate caching headers.
 - Resource Server
   - [ ] Check whether access tokens expire within 1 hour.
   - [ ] Check whether access and refresh tokens are in a request header or a request body.
   - [ ] Check whether invalid tokens are rejected.
     - [ ] expired
-    - [ ] revoked 
+    - [ ] revoked
     - JWTs
       - [ ] generated for different resource server
       - [ ] signed by a different issuer (e.g. yourself).
       - [ ] revoked signing key/certificate
       - [ ] signed with the none algorithm
-      - [ ] signed using symmetric algorithm and the public key as secret key 
+      - [ ] signed using symmetric algorithm and the public key as secret key
   - [ ] Check whether you can access an API that requires scope that you do not have.
 
 ## Conclusion
