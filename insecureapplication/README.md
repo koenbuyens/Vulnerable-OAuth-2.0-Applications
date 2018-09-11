@@ -11,7 +11,7 @@ To run the applications:
     ```bash
     docker-compose up
     ```
-2. Connect with VNC to port 5900 of localhost and a pwd of `secret`, start firefox, and browse to `http://photoprint:3000`.
+2. Connect with VNC to port 5900 of localhost and a pwd of `secret`, start firefox, and browse to [http://photoprint:3000](http://photoprint:3000) .
 
 ## Manually
 
