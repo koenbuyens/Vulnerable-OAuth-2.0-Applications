@@ -195,7 +195,6 @@ function exchangecode(client, code, redirectURI, done) {
  */
 function exchangerefreshtoken(client, mytoken, scope, done) {
   // insecure: logs refresh tokens
-  console.log(client);
   console.log('Refresh Token: ' + mytoken);
   // insecure: not a strong access token
   let accesstoken = Math.floor(Math.random() * (100000-1) +1) + '';
@@ -204,10 +203,14 @@ function exchangerefreshtoken(client, mytoken, scope, done) {
   // insecure: artificial way to get nosql injection
   const MongoClient = require('mongodb').MongoClient;
   let query = '{"$where": "function() { return this.token == '+mytoken +'; }"}';
-  MongoClient.connect(config.mongodb.url, function(err, db) {
-    if (err) console.log(err); return done(false);
-    db.collection('refreshtokens').find(JSON.parse(query)).
+  MongoClient.connect(config.mongodb.url, config.mongodb.options, function(err, db) {
+    if (err) {
+      return done(false);
+    }
+    console.log('passed error msg');
+    db.db().collection('refreshtokens').find(JSON.parse(query)).
         toArray(function(err, allrefs) {
+          console.log(allrefs);
           if (err) {
             return done(
                 new oauth2orize.TokenError(
@@ -217,7 +220,6 @@ function exchangerefreshtoken(client, mytoken, scope, done) {
             );
           }
           reftoken = allrefs[0];
-          console.log('TOKEN: ' + reftoken);
           if (reftoken == null || reftoken == undefined) {
             return done(
                 new oauth2orize.AuthorizationError(
