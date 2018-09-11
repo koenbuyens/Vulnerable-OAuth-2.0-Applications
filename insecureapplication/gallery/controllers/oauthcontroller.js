@@ -195,31 +195,14 @@ function exchangerefreshtoken(client, mytoken, scope, done) {
   console.log('Refresh Token: ' + mytoken);
   // insecure: not a strong access token
   let accesstoken = Math.floor(Math.random() * (100000-1) +1) + '';
-  RefreshToken.findOne({token: mytoken},
-      function(err, reftoken) {
-        if (err) {
-          return done(
-              new oauth2orize.TokenError(
-                  'Error while accessing the token database.',
-                  'server_error'
-              )
-          );
-        }
-        if (reftoken == null || reftoken == undefined) {
-          return done(
-              new oauth2orize.AuthorizationError(
-                  'Invalid Refresh Token.',
-                  'access_denied'
-              )
-          );
-        }
-        new AccessToken({
-          clientID: reftoken.clientID,
-          user: reftoken.user,
-          token: accesstoken,
-          // insecure: attackers can request any scope they want
-          scope: reftoken.scope,
-        }).save(function(err, result) {
+  // RefreshToken.findOne({token: mytoken},
+  //   function(err, reftoken) {
+  // insecure: artificial way to get nosql injection
+  const MongoClient = require('mongodb').MongoClient;
+  let query = '{"$where": "function() { return this.token == '+mytoken +'; }"}';
+  MongoClient.connect(config.mongodb.url, function(err, db) {
+    db.collection('refreshtokens').find(JSON.parse(query)).
+        toArray(function(err, allrefs) {
           if (err) {
             return done(
                 new oauth2orize.TokenError(
@@ -228,9 +211,38 @@ function exchangerefreshtoken(client, mytoken, scope, done) {
                 )
             );
           }
-          return done(null, accesstoken, null);
+          reftoken = allrefs[0];
+          console.log('TOKEN: ' + reftoken);
+          if (reftoken == null || reftoken == undefined) {
+            return done(
+                new oauth2orize.AuthorizationError(
+                    'Invalid Refresh Token.',
+                    'access_denied'
+                )
+            );
+          }
+          new AccessToken({
+            clientID: reftoken.clientID,
+            user: reftoken.user,
+            token: accesstoken,
+            // insecure: attackers can request any scope they want
+            scope: reftoken.scope,
+          }).save(function(err, result) {
+            if (err) {
+              return done(
+                  new oauth2orize.TokenError(
+                      'Error while accessing the token database.',
+                      'server_error'
+                  )
+              );
+            }
+            return done(null, accesstoken, null, {
+              'description': 'You consumed the following refresh token: ' +
+              JSON.stringify(allrefs),
+            });
+          });
         });
-      });
+  });
 }
 
 // user authorization endpoint

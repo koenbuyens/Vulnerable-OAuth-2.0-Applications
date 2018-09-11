@@ -7,64 +7,68 @@ a [Single Page Application](#single-page-application-implicit-grant-flow), and a
 
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
-- [TL;DR](#tldr)
-- [Introduction](#introduction)
-- [Running Example and Background](#running-example-and-background)
-- [Architect: Major Design Decisions](#architect-major-design-decisions)
-  - [Use the Authorization Code Grant for Classic Web Applications and Native Mobile Apps](#use-the-authorization-code-grant-for-classic-web-applications-and-native-mobile-apps)
-  - [Use Refresh Tokens When You Trust the Client to Store Them Securely](#use-refresh-tokens-when-you-trust-the-client-to-store-them-securely)
-  - [Use Handle-Based Tokens Outside Your Network](#use-handle-based-tokens-outside-your-network)
-  - [Selecting the Token Type](#selecting-the-token-type)
-  - [Use Bearer Tokens When You do not Care to Whom They Were Issued](#use-bearer-tokens-when-you-do-not-care-to-whom-they-were-issued)
-  - [Combining Authorization Server and Resource Server](#combining-authorization-server-and-resource-server)
-- [Classic Web Application: Authorization Code Grant Flow](#classic-web-application-authorization-code-grant-flow)
-  - [Design of OAuth 2.0 Classic Web Application](#design)
-  - [Insecure Implementation](#insecure-implementation)
-    - [Gallery](#gallery)
-      - [Step 1: Click print Button](#step-1-click-print-button)
-      - [Step 2: Redirect to Gallery, Authenticate, and Consent Request](#step-2-redirect-to-gallery-authenticate-and-consent-request)
-      - [Step 3: Approval and Generation of Authorization Code](#step-3-approval-and-generation-of-authorization-code)
-      - [Step 4: Redirection To The Client](#step-4-redirection-to-the-client)
-      - [Step 5:  Client Sends Authorization Code And Its Credentials To The Token Endpoint](#step-5-client-sends-authorization-code-and-its-credentials-to-the-token-endpoint)
-      - [Step 6: Issue An Access Token At The Token Endpoint](#step-6-issue-an-access-token-at-the-token-endpoint)
-      - [Step 7: Access a Resource](#step-7-access-a-resource)
-    - [Print](#print)
-  - [Security Considerations](#security-considerations)
-    - [Gallery Authorization Server](#gallery-authorization-server)
-      - [Authorization Endpoint: Validate the RedirectURI Parameter](#authorization-endpoint-validate-the-redirecturi-parameter)
-      - [Authorization Endpoint: Generate Strong Authorization Codes](#authorization-endpoint-generate-strong-authorization-codes)
-      - [Authorization Endpoint: Expire Unused Authorization Codes](#authorization-endpoint-expire-unused-authorization-codes)
-      - [Token Endpoint: Invalidate Authorization Codes After Use](#token-endpoint-invalidate-authorization-codes-after-use)
-      - [Token Endpoint: Bind the Authorization Code to the Client](#token-endpoint-bind-the-authorization-code-to-the-client)
-      - [Token Endpoint: Expire Access and Refresh Tokens](#token-endpoint-expire-access-and-refresh-tokens)
-      - [Token Endpoint: Generate Strong Handle-Based Access and Refresh Tokens](#token-endpoint-generate-strong-handle-based-access-and-refresh-tokens)
-      - [Token Endpoint: Store Handle-Based Access and Refresh Tokens Securely](#token-endpoint-store-handle-based-access-and-refresh-tokens-securely)
-      - [Token Endpoint: Limit Token Scope](#token-endpoint-limit-token-scope)
-      - [Token Endpoint: Store Client Secrets Securely](#token-endpoint-store-client-secrets-securely)
-      - [Token Endpoint: Bind Refresh Token to Client](#token-endpoint-bind-refresh-token-to-client)
-      - [Resource Server: Reject Revoked Tokens](#resource-server-reject-revoked-tokens)
-      - [Resource Server: Validate Token Scope](#resource-server-validate-token-scope)
-      - [Implement Rate-Limiting](#implement-rate-limiting)
-    - [Photoprint OAuth 2.0 Client](#photoprint-oauth-20-client)
-      - [Store Client Secrets Securely](#store-client-secrets-securely)
-      - [Store Access and Refresh Tokens Securely](#store-access-and-refresh-tokens-securely)
-- [Mobile Application: Authorization Code Grant with PKCE](#mobile-application-authorization-code-grant-with-pkce)
-  - [Design of OAuth 2.0 Mobile Application](#design-of-oauth-20-mobile-application)
-  - [Implementation](#implementation)
-  - [Testing](#testing)
-- [Single Page Application: Implicit Grant Flow](#single-page-application-implicit-grant-flow)
-  - [Design of OAuth 2.0 SPA Client](#design-of-oauth-20-spa-client)
-  - [Implementation of OAuth 2.0 SPA Client](#implementation-of-oauth-20-spa-client)
-  - [Testing of OAuth 2.0 SPA Client](#testing-of-oauth-20-spa-client)
-- [First Party Mobile Application: Resource Owner Password Credentials Flow](#first-party-mobile-application-resource-owner-password-credentials-flow)
-  - [Design of First Party Mobile Application Client](#design-of-first-party-mobile-application-client)
-  - [Implementation of First Party Mobile Application Client](#implementation-of-first-party-mobile-application-client)
-  - [Security Considerations of First Party Mobile Application Client](#security-considerations-of-first-party-mobile-application-client)
-- [Checklists](#checklists)
-  - [For Architects](#for-architects)
-  - [For Software Engineers](#for-software-engineers)
-  - [For Testers](#for-testers)
-- [Conclusion](#conclusion)
+- [OAuth 2.0: Security Considerations](#oauth-20-security-considerations)
+  - [TL;DR](#tldr)
+  - [Introduction](#introduction)
+  - [Running Example and Background](#running-example-and-background)
+  - [Architect: Major Design Decisions](#architect-major-design-decisions)
+    - [Use the Authorization Code Grant for Classic Web Applications and Native Mobile Apps](#use-the-authorization-code-grant-for-classic-web-applications-and-native-mobile-apps)
+    - [Use Refresh Tokens When You Trust the Client to Store Them Securely](#use-refresh-tokens-when-you-trust-the-client-to-store-them-securely)
+    - [Use Handle-Based Tokens Outside Your Network](#use-handle-based-tokens-outside-your-network)
+    - [Selecting the Token Type](#selecting-the-token-type)
+    - [Use Bearer Tokens When You do not Care to Whom They Were Issued](#use-bearer-tokens-when-you-do-not-care-to-whom-they-were-issued)
+    - [Combining Authorization Server and Resource Server](#combining-authorization-server-and-resource-server)
+  - [Classic Web Application: Authorization Code Grant Flow](#classic-web-application-authorization-code-grant-flow)
+    - [Architect: Design](#architect-design)
+    - [Developer: Insecure Implementation](#developer-insecure-implementation)
+      - [Gallery](#gallery)
+    - [Architect, Developer, and Pentester: Security Considerations](#architect-developer-and-pentester-security-considerations)
+      - [Gallery Authorization Server](#gallery-authorization-server)
+        - [Authorization Endpoint: Validate the RedirectURI Parameter](#authorization-endpoint-validate-the-redirecturi-parameter)
+        - [Authorization Endpoint: Generate Strong Authorization Codes](#authorization-endpoint-generate-strong-authorization-codes)
+        - [Authorization Endpoint: Expire Unused Authorization Codes](#authorization-endpoint-expire-unused-authorization-codes)
+        - [Token Endpoint: Invalidate Authorization Codes After Use](#token-endpoint-invalidate-authorization-codes-after-use)
+        - [Token Endpoint: Bind the Authorization Code to the Client](#token-endpoint-bind-the-authorization-code-to-the-client)
+        - [Token Endpoint: Generate Strong Handle-Based Access and Refresh Tokens](#token-endpoint-generate-strong-handle-based-access-and-refresh-tokens)
+        - [Token Endpoint: Store Handle-Based Access and Refresh Tokens Securely](#token-endpoint-store-handle-based-access-and-refresh-tokens-securely)
+        - [Token Endpoint: Expire Access and Refresh Tokens](#token-endpoint-expire-access-and-refresh-tokens)
+        - [Token Endpoint: Store Client Secrets Securely](#token-endpoint-store-client-secrets-securely)
+        - [Use Strong Client Secrets](#use-strong-client-secrets)
+        - [Implement Rate-Limiting](#implement-rate-limiting)
+        - [Token Endpoint: Bind Refresh Token to Client](#token-endpoint-bind-refresh-token-to-client)
+        - [Resource Server: Reject Revoked Tokens](#resource-server-reject-revoked-tokens)
+        - [Token Endpoint: Limit Token Scope](#token-endpoint-limit-token-scope)
+        - [Resource Server: Validate Token Scope](#resource-server-validate-token-scope)
+      - [Photoprint OAuth 2.0 Client](#photoprint-oauth-20-client)
+        - [CSRF](#csrf)
+        - [Store Client Secrets Securely](#store-client-secrets-securely)
+        - [Store Access and Refresh Tokens Securely](#store-access-and-refresh-tokens-securely)
+  - [Mobile Application: Authorization Code Grant with PKCE](#mobile-application-authorization-code-grant-with-pkce)
+    - [Architect: Design of an OAuth 2.0 Mobile Application](#architect-design-of-an-oauth-20-mobile-application)
+    - [Developer: Insecure Implementation of an OAuth 2.0 Mobile Application](#developer-insecure-implementation-of-an-oauth-20-mobile-application)
+    - [Architect, Developer, Penetration Tester: Security Considerations of an Mobile Application Client](#architect-developer-penetration-tester-security-considerations-of-an-mobile-application-client)
+    - [Single Page Application: Implicit Grant Flow](#single-page-application-implicit-grant-flow)
+      - [Architect: Design of OAuth 2.0 SPA Client](#architect-design-of-oauth-20-spa-client)
+    - [Developer: Implementation of OAuth 2.0 SPA Client](#developer-implementation-of-oauth-20-spa-client)
+    - [Architect, Developer, Penetration Tester: Security Considerations of a SPA Client](#architect-developer-penetration-tester-security-considerations-of-a-spa-client)
+  - [First Party Mobile Application: Resource Owner Password Credentials Flow](#first-party-mobile-application-resource-owner-password-credentials-flow)
+    - [Architect: Design of First Party Mobile Application Client](#architect-design-of-first-party-mobile-application-client)
+    - [Developer: Implementation of First Party Mobile Application Client](#developer-implementation-of-first-party-mobile-application-client)
+    - [Architect, Developer, Penetration Tester: Security Considerations of a First Party Mobile Application Client](#architect-developer-penetration-tester-security-considerations-of-a-first-party-mobile-application-client)
+  - [OpenID Connect](#openid-connect)
+  - [Checklists](#checklists)
+    - [For Architects](#for-architects)
+    - [For Software Engineers](#for-software-engineers)
+    - [For Testers](#for-testers)
+  - [Conclusion](#conclusion)
+  - [References](#references)
+    - [OAuth 2.0 Core](#oauth-20-core)
+    - [Mobile and Other Devices](#mobile-and-other-devices)
+    - [Token and Token Management](#token-and-token-management)
+    - [Other Extensions](#other-extensions)
+    - [Community Resources](#community-resources)
+    - [Protocols Built on OAuth 2.0](#protocols-built-on-oauth-20)
+  - [TODOs](#todos)
 
 <!-- /TOC -->
 
@@ -550,9 +554,11 @@ Alternatively, bruteforce the tokens at the resource server if you have a compro
 
 If the handle-based tokens are stored as plain text, an attacker may be able to obtain them from the database at the resource server or the token endpoint.
 
+![An attacker can steal tokens via  a SQL attack from the database.](./pics/hashrefreshtokens.gif)
+
 To remediate this, hash the tokens before storing them using a strong hashing algorithm. When validating the token, hash the incoming token and validate whether that hashed value exists in the database.
 
-To validate this as a tester, perform a NoSQL injection and validate whether the tokens have been stored unhashed. It is better to validate this using a code review.
+To validate this as a tester, obtain the contents of the database via a NoSQL/SQL injection attack, and validate whether the tokens have been stored unhashed. Note that it is better to validate this using a code review.
 
 ##### Token Endpoint: Expire Access and Refresh Tokens
 
@@ -568,15 +574,22 @@ If the client secrets are stored as plain text, an attacker may be able to obtai
 
 To remediate this, store the client secrets like you would store user passwords: hashed with a strong hashing algorithm such as bcrypt, scrypt, or pbkdf2. When validating the secret, hash the incoming secret and compare it against the one stored in the database for that client.
 
-To validate this as a tester, perform a NoSQL injection and validate whether the secrets have been stored unhashed. It is better to validate this using a code review.
+To validate this as a tester, obtain the contents of the database via a NoSQL/SQL injection attack and validate whether the secrets have been stored unhashed. Note that it is better to validate this using a code review.
 
 ##### Use Strong Client Secrets
 
-If the client secrets are weak, an attacker may be able to guess them at the resource server or the token endpoint.
+If the client secrets are weak, an attacker may be able to guess them at the token endpoint.
 
 To remediate this, generate secrets with a length of at least 128 bit using a secure pseudo-random number generator that is seeded properly. Most mature OAuth 2.0 frameworks implement this correctly.
 
-To validate this as a tester, analyze the entropy of multiple captured secrets. Note that it is hard to capture secrets for clients that are classic web applications as these secrets are communicated via a back-channel.
+To validate this as a tester, perform a bruteforce attack on the secret at the token endpoint.
+
+1. Use BurpSuite Intruder to guess client secrets. Use `Simple list` as payload type, select a password dictionary, add a prefix (client ID and colon) to the password and base64 encode the result.
+2. Observe the result.
+
+![Weak secrets can be bruteforced with password lists.](./pics/weaksecret_burp.png)
+
+Alternatively, analyze the entropy of multiple captured secrets. Note that it is hard to capture secrets for clients that are classic web applications as these secrets are communicated via a back-channel.
 
 ##### Implement Rate-Limiting
 
@@ -586,7 +599,11 @@ To validate this as a tester, try any of the previously listed bruteforcing atta
 
 ##### Token Endpoint: Bind Refresh Token to Client
 
-TODO
+If the binding between a refresh token and the client is not validated, a malicious client may be able to exchange captured or guessed refresh tokens for access tokens. This is especially problematic if the application allows automatic registration of clients.
+
+To remediate this, do the following. Upon minting refresh tokens, store the client who they are issued for. Upon token exchange, validate whether the client that exchanges it (using the client ID) is the same as the client that obtained it.
+
+To validate this as a tester, exchange a refresh token that was previously issued for one client with another client. Note, this requires access to multiple clients and their client secrets.
 
 ##### Resource Server: Reject Revoked Tokens
 
