@@ -90,8 +90,8 @@ Our canonical running example consists of a web site that enables users to manag
 
  As our gallery application became quite popular, we got requests from various companies to integrate with our `gallery` application. To that end, we decided to open up the `REST API` that forms the foundation of our application towards those companies. These companies use the following types of clients:
 - a third-party website that allows users to print the pictures hosted at our gallery site, named `photoprint`.
-- a third-party mobile application that enables users to upload pictures.
-- a single-page application displaying a live feed of a posted pictures. 
+- a third-party mobile application that enables users to upload pictures, named `mypics`.
+- a single-page application displaying a live feed of a posted pictures, named `livepics`.
 
 Naturally, we also would like to create our own mobile application that our users can use to access our gallery site. However, as we are concerned about security, users should be able to give those third-party applications permission to access their pictures without providing their username and password to those applications. It seems that the OAuth 2.0 protocol might help achieve our goals.
 
