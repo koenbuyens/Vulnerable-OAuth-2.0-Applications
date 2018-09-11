@@ -3,7 +3,7 @@
 ## TL;DR
 
 We show how to use OAuth 2.0 securely when using a [Classic Web Application](#classic-web-application-authorization-code-grant-flow),
-a [Single Page Application](#single-page-application-implicit-grant-flow), and a [Mobile Application](#mobile-application-authorization-code-grant-with-pkce) as clients. For each of these clients, we  elaborate on the overall design, implement that design using the MEAN stack, and touch upon common security mistakes. You can exploit these mistakes by deploying the [damn vulnerable OAuth 2.0 applications](https://github.com/koenbuyens/Damn-Vulnerable-OAuth-2.0-Applications/blob/master/insecureapplication/README.md).
+a [Single Page Application](#single-page-application-implicit-grant-flow), and a [Mobile Application](#mobile-application-authorization-code-grant-with-pkce) as clients. For each of these clients, we  elaborate on the overall design, implement that design, and touch upon common security mistakes. You can exploit these mistakes by deploying the [damn vulnerable OAuth 2.0 applications](https://github.com/koenbuyens/Damn-Vulnerable-OAuth-2.0-Applications/blob/master/insecureapplication/README.md).
 
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
@@ -90,8 +90,8 @@ Our canonical running example consists of a web site that enables users to manag
 
  As our gallery application became quite popular, we got requests from various companies to integrate with our `gallery` application. To that end, we decided to open up the `REST API` that forms the foundation of our application towards those companies. These companies use the following types of clients:
 - a third-party website that allows users to print the pictures hosted at our gallery site, named `photoprint`.
-- a third-party mobile application that enables users to view pictures from many gallery applications.
-- a website of a printing company that has been designed as a single page application.
+- a third-party mobile application that enables users to upload pictures, named `mypics`.
+- a single-page application displaying a live feed of a posted pictures, named `livepics`.
 
 Naturally, we also would like to create our own mobile application that our users can use to access our gallery site. However, as we are concerned about security, users should be able to give those third-party applications permission to access their pictures without providing their username and password to those applications. It seems that the OAuth 2.0 protocol might help achieve our goals.
 
@@ -453,15 +453,31 @@ In this section, we present common security mistakes made when designing/impleme
 
 If the authorization server does not validate that the redirect URI belongs to the client, it is susceptible to two types of attacks:
 
-- Open Redirect. ![Attacker redirects the victim the victim to a random site.](./pics/openredirect.gif)
+- [Open Redirect](https://www.owasp.org/index.php/Unvalidated_Redirects_and_Forwards_Cheat_Sheet). ![Attacker redirects the victim the victim to a random site.](./pics/openredirect.gif)
 - Stealing of Authorization Codes. ![Attacker steals a valid authorization code from the victim.](./pics/openredirect_stealauthzcode.gif)
+- XSS
 
-To remediate this, validate whether the redirect_uri parameter is one the client provided during the registration process.
+To remediate this, validate whether the `redirect_uri` parameter is one the client provided during the registration process. The match should be an exact match.
 
 To validate this as a tester, do the following:
 
 1. Capture the URL that the OAuth 2.0 client uses to talk with the authorization endpoint.  `http://gallery:3005/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Fphotoprint%3A3000%2Fcallback&scope=view_gallery&client_id=photoprint`
 2. Change the value of the redirect_uri parameter to one you control.  `http://gallery:3005/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Fattacker%3A1337%2Fcallback&scope=view_gallery&client_id=photoprint`
+    One can use many payloads, including but not limited to.
+    - XSS:
+        - data%3Atext%2Fhtml%2Ca&state=<script>alert('XSS')
+        - javascript://https://evil.com/?z=%0Aalert(1)
+    - Bypass validation:
+      - External accepted url:
+        - https://accounts.google.com/BackToAuthSubTarget?next=https://evil.com 
+        - https%3A%2F%2Fapps.facebook.com%2Fattacker%2F 
+      - regexes:
+        - http://example.com%2f%2f.victim.com
+        - http://example.com%5c%5c.victim.com
+        - http://example.com%3F.victim.com
+        - http://example.com%23.victim.com
+        - http://victim.com:80%40example.com
+        - http://victim.com%2eexample.com
 
 ##### Authorization Endpoint: Generate Strong Authorization Codes
 
@@ -879,6 +895,11 @@ Partially taken from [https://oauth.net/2/](https://oauth.net/2/).
 - [OpenID Connect](http://openid.net/connect/)
 - [UMA](https://docs.kantarainitiative.org/uma/rec-uma-core.html)
 - [IndieAuth](https://indieauth.spec.indieweb.org/)
+
+
+### Security/Penetration Testing
+
+#### URI Redirect Bypass
 
 ## TODOs
 
