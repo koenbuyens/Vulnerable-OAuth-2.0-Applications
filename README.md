@@ -93,13 +93,14 @@ Our canonical running example consists of a web site that enables users to manag
  As our gallery application became quite popular, we got requests from various companies to integrate with our `gallery` application. To that end, we decided to open up the `REST API` that forms the foundation of our application towards those companies. These companies use the following types of clients:
 - a third-party website that allows users to print the pictures hosted at our gallery site, named `photoprint`.
 - a third-party mobile application that enables users to upload pictures, named `mypics`.
+- a first-party mobile application that enables gallery users to upload pictures and change their profile, named `mobilegallery`.
 - a single-page application displaying a live feed of a posted pictures, named `livepics`.
 
-Naturally, we also would like to create our own mobile application that our users can use to access our gallery site. However, as we are concerned about security, users should be able to give those third-party applications permission to access their pictures without providing their username and password to those applications. It seems that the OAuth 2.0 protocol might help achieve our goals.
+As we are concerned about security, users should be able to give those third-party applications permission to access their pictures without providing their username and password to those applications. It seems that the OAuth 2.0 protocol might help achieve our goals.
 
 ![Our running example consists of a photo gallery API that can be accessed by many applications](./pics/RunningExample.png)
 
-[OAuth 2.0](https://tools.ietf.org/html/rfc6749) is a [standard](https://tools.ietf.org/html/rfc6750) that enables users to give websites access to their data/services at other websites. For instance, a user gives a photo printing website access to her pictures on Flickr. Before performing a deep-dive into the specifics of OAuth 2.0, we introduce some definitions (taken from auth0):
+[OAuth 2.0](https://tools.ietf.org/html/rfc6749) is a [standard](https://tools.ietf.org/html/rfc6750) that enables users to give websites access to their data/services at other websites. For instance, a user gives a photo printing website access to her pictures on Flickr. Before performing a deep-dive into the specifics of OAuth 2.0, we introduce some definitions (taken from [auth0](https://auth0.com/docs/protocols/oauth2#oauth-roles)):
 
 - ***Resource Owner***: the entity that can grant access to a protected resource. Typically this is the end-user.
 - ***Client***: an application requesting access to a protected resource on behalf of the Resource Owner. This is also called a Relying Party.
@@ -131,7 +132,7 @@ A major design decision is deciding which flows to support. This largely depends
 
 - A classic web application, use the Authorization Code Grant.
 - A single page application, use the Implicit Grant.
-- A native mobile application, use the Authorization Code Grant with PKCE.
+- A native mobile application, use the [Authorization Code Grant with PKCE](https://tools.ietf.org/html/rfc7636).
 - A client that is absolutely trusted with user credentials (i.e. the Facebook app accessing Facebook), use the Resource Owner Password Grant.
 - A client that is the owner of the data, use the Client Credentials Grant.
 
@@ -139,7 +140,7 @@ A major design decision is deciding which flows to support. This largely depends
 
 Using an incorrect flow for a client has various security implications. For instance, using the Resource Owner Password Grant for third-party mobile applications, gives those mobile applications access to the user's credentials. These credentials allow those applications to access all of the user data, as they can just login as the user itself. This is probably something you want to avoid.
 
-In the subsequent sections, we show how to use OAuth 2.0 when using a [Classic Web Application](#classic-web-application-authorization-code-grant-flow), a [Single Page Application](#single-page-application-implicit-grant-flow), and [Mobile Application](#mobile-application-authorization-code-grant-with-pkce) as clients. For each of these sections, we  elaborate on the overall design, implement that design using the MEAN stack, and touch upon common security mistakes.
+In the subsequent sections, we show how to use OAuth 2.0 when using a [Classic Web Application](#classic-web-application-authorization-code-grant-flow), a [Single Page Application](#single-page-application-implicit-grant-flow), and a first-party and third-party [Mobile Application](#mobile-application-authorization-code-grant-with-pkce) as clients. For each of these sections, we  elaborate on the overall design, implement that design, and touch upon common security mistakes.
 
 ### Use Refresh Tokens When You Trust the Client to Store Them Securely
 
@@ -150,9 +151,9 @@ OAuth 2.0 uses two types of tokens, namely Access Tokens and Refresh Tokens.
 
 Think of Access Tokens [like a session that is created once you authenticate to a website](https://nordicapis.com/api-security-oauth-openid-connect-depth/). As long as that session is valid, we can interact with that website without needing to login again. Once the session times out, we would need to login again with our username and password. Refresh tokens are like that password, as they allow a *Client* to create a new session.
 
-Just like passwords, it is important that the *Client* stores these *Refresh Tokens* securely. If you do not trust that the client will store those tokens securely, do not issue *Refresh Tokens*. An attacker with access to the *Refresh Tokens* can obtain new *Access Tokens* and use those *Access tokens* to access a user's *Resources*. The main downside of not using *Refresh Tokens* is that users would need to re-authenticate every time the *Access Token* expires.
+Just like passwords, it is important that the *Client* stores these *Refresh Tokens* securely. If you do not trust that the client will store those tokens securely, do not issue *Refresh Tokens*. An attacker with access to the *Refresh Tokens* can obtain new *Access Tokens* and use those *Access tokens* to access a user's *Resources*. The main downside of not using *Refresh Tokens* is that users/clients would need to re-authenticate every time the *Access Token* expires.
 
-Note that public clients should not be issued refresh tokens.
+**Note** that public clients should not be issued refresh tokens.
 
 ![A decision tree that helps an architect to decide whether to support refresh tokens](./pics/DecisionTreeRefreshToken.png)
 
@@ -216,15 +217,15 @@ We made the following OAuth 2.0-related design decisions for the `gallery` appli
 We not only made OAuth 2.0-related design decisions, but also related to the technology stack:
 
 - the `gallery` application has a simple REST API: POST (create), GET (read), UPDATE (modify), and DELETE for `images`,`users`, and `albums`. A gallery is the albums and pictures belonging to a user. Users can login via the `login` endpoint. Besides gallery-related functionality, the API also supports the OAuth 2.0-related endpoints: the token endpoint (`token`) and the authorization endpoint (`authorize`).
-- the `gallery` application uses the [MEAN stack](http://mean.io/). The application uses [`express.js`](https://expressjs.com/) on top of  [`node.js`](https://nodejs.org/en/) and stores data in [`MongoDB`](https://www.mongodb.com/).
+- the `gallery` application uses the [MEAN stack](http://mean.io/). The application uses [`express.js`](https://expressjs.com/) on top of  [`node.js`](https://nodejs.org/en/) and stores data in [`MongoDB`](https://www.mongodb.com/). The OAuth-related functionality is implemented using the [`oauth2orize`](https://github.com/jaredhanson/oauth2orize) package.
 
 ![Authorization Code Grant](./pics/AuthorizationCodeGrant.png)
 
 The interactions between `gallery` and `photoprint` are as follows (major use case).
 
-1. A user, let's call her Vivian, navigates to the printing website. This website is called the `Client`. Vivian uploaded the pictures to picture gallery site (Gallery). The printing website (client, `photoprint`) offers the possibility to obtain pictures from the gallery site via a button that says *“Print pictures from the gallery site”*. Vivian clicks that button.
+1. A user, let's call her Vivian, navigates to the printing website, `photoprint`. This website is called the `Client`. Vivian uploaded the pictures to picture gallery site (`gallery`). The printing website offers the possibility to obtain pictures from the gallery site via a button that says *“Print pictures from Gallery”*. Vivian clicks that button.
     ![The Print Button on photoprint.](./pics/printpicturesfromgallery.png)
-2. The client redirects her to an Authorization Server (AS; Authorization Endpoint).
+2. The client redirects her to an Authorization Server (AS; Authorization Endpoint). In our case, hosted by `gallery`.
 
     ```http
     GET /oauth/authorize?redirect_uri=http%3A%2F%2Fphotoprint%3A3000%2Fcallback
@@ -234,10 +235,10 @@ The interactions between `gallery` and `photoprint` are as follows (major use ca
     Referer: http://photoprint:3000/
     ```
 
-    As you notice, the URI contains the parameters `redirect_uri`, `scope`, `response_type`, and `client_id`. The `redirect_uri` is where `gallery` will redirect Vivian after having created an authorization code. The `scope` is the access level that the client needs (`view_gallery` is a custom scope that enables clients to view the pictures from a user's gallery). The `response_type` is `code` as we want to use the authorization code flow. The `client_id` is an identifier that represents the `photoprint` application.
-3. That server allows Vivian to authenticate to the gallery site and asks her if she consents to the Client accessing her pictures.
+    As you notice, the URI contains the parameters `redirect_uri`, `scope`, `response_type`, and `client_id`. The `redirect_uri` is where `gallery` will redirect Vivian after having created an authorization code. The `scope` is the access level that the client needs (`view_gallery` is a custom scope that enables clients to view the pictures from a user's gallery). The `response_type` is `code` as we want to use the authorization code grant. The `client_id` is an identifier that represents the `photoprint` application.
+3. That server allows Vivian to authenticate to the gallery site and asks her if she consents to the Client `photoprint` accessing her pictures.
     ![Vivian can authenticate to the gallery site.](./pics/authcodegrant-dialog.png)
-4. Assuming that Vivian gives her consent, the AS generates an Authorization Code (Authorization Grant) and sends it back to Vivian’s browser with a redirect command toward the return URL specified by the Client.
+4. Assuming that Vivian gives her consent, the AS generates an Authorization Code (Authorization Grant) and sends it back to Vivian’s browser with a redirect command toward the return URL specified by the Client `photoprint` (in step 2).
 
     ```http
     HTTP/1.1 302 Found
@@ -257,8 +258,8 @@ The interactions between `gallery` and `photoprint` are as follows (major use ca
     </p>
     ```
 
-    The Authorization Code is part of that URL.
-5. The browser honors the redirect and passes the Authorization Code to the Client.
+    Note that the *Authorization Code* is part of that URL.
+5. The browser honors the redirect and passes the Authorization Code to the Client (`photoprint`).
 
     ```http
     GET /callback?code=630111c5-3c53-452f-ac8b-ad4e166aff76 HTTP/1.1
@@ -270,7 +271,7 @@ The interactions between `gallery` and `photoprint` are as follows (major use ca
     ```
 
     The Authorization Code is part of that URL.
-6. The Client forwards that Authorization Code together with its own credentials to the AS (Token Endpoint). From this step on, the interactions are server-to-server. The Authorization Code proves that Vivian consented to the actions that the Client wants to do. Moreover, the message contains the Client’s own credentials (the Client ID and the Client Secret).
+6. The Client `photoprint` forwards that Authorization Code together with its own credentials to the AS (Token Endpoint) at `gallery`. From this step on, the interactions are server-to-server. The Authorization Code proves that Vivian consented to the actions that the Client `photoprint` wants to do. Moreover, the message contains the Client’s own credentials (the Client ID and the Client Secret).
 
     ```http
     POST /oauth/token HTTP/1.1
@@ -285,8 +286,8 @@ The interactions between `gallery` and `photoprint` are as follows (major use ca
       &client_id=photoprint&client_secret=secret
     ```
 
-    The request contains the parameters `authorization_code`, `redirect_uri`, `grant_type`, `client_id`, and `client_secret`. The `authorization_code` is a proof that the user approved this client to access their resources. The `grant_type` is the type of the code that was delivered (i.e., an `authorization_code`). The `redirect_uri` is the URI where the *Access Tokens* will be delivered. The `client_id` and the `client_secret` authenticate the client. They can be delivered via an Authorization header or as parameters in the body of the request.
-7. Assuming that the Client is allowed to make requests, the AS issues to the Client an Access Token. The AS may also issue a Refresh Token. The refresh token enables the Client to obtain new access tokens; e.g. when the old ones expire.
+    The request contains the parameters `authorization_code`, `redirect_uri`, `grant_type`, `client_id`, and `client_secret`. The `authorization_code` is a proof that the user approved this client to access their resources. The `grant_type` is the type of the code that was delivered (i.e., an `authorization_code`). The `redirect_uri` is the URI where the *Access Tokens* will be delivered. The `client_id` and the `client_secret` authenticate the client. They are typically part of a Basic Authorization header, but `gallery` also accepts them as parameters in the body of the request.
+7. Assuming that the Client `photoprint` is allowed to make requests, the Token Endpoint at the Authorization Server `gallery` issues the Client `photoprint` an Access Token. The AS may also issue a Refresh Token. The refresh token enables the Client `photoprint` to obtain new access tokens; e.g. when the old ones expire. Typically, refresh tokens are issued when `offline_access` is added to the scope in step 2.
 
     ```json
     X-Powered-By: Express
@@ -303,8 +304,8 @@ The interactions between `gallery` and `photoprint` are as follows (major use ca
     }
     ```
 
-    The server responds with an access token that the `photoprint` application can use to make calls to the API of the gallery site (which offer access to Vivian’s pictures). Vivian is the Resource Owner, her pictures are Protected Resources (PRs), while the gallery site is the Resource Server (RS).
-8. The Client can finally access the PR; Vivian's pictures. The print application then uses the access token to access a resource on gallery.
+    The server responds with an access token that the Client `photoprint` application can use to make calls to the API of Resource Server `gallery` (which offer access to Vivian’s pictures). Vivian is the Resource Owner, her pictures are Protected Resources (PRs), while the gallery site is the Resource Server (RS).
+8. The Client `photoprint` then uses the access token to access a Protected Resource, Vivian's pictures, on the Resource Server `gallery`.
 
     ```http
     GET /photos/me HTTP/1.1
@@ -366,7 +367,7 @@ Our gallery application is structured like a typical MEAN stack application:
 - it implements the ***[Model-View-Controller](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller)*** pattern. The model is the central component that manages the data, logic, and rules of the application. The view is the component that generates the output to the user based on changes in the model; i.e. it consists of the pages/responses that we are going to send to the Client. The controller forms the glue between models and views: it queries the models for data and puts that data into views that is sent to clients (users). The model and controller are custom code, while for the views we use the default [`Pug` (`Jade`)](https://github.com/pugjs/pug) as view template engine.
 - Besides the MVC pattern, express.js applications also use a ***[router](https://expressjs.com/en/guide/routing.html)*** that maps URIs to controller functions. Architecturally speaking, this may be part of the controller, but most express.js applications use a separate folder for that.  
 
-The flow throughout our express.js gallery application is as follows. A *Client* makes an HTTP request to our gallery application. The express.js enabled gallery application first passes the request throughout various middleware functionality (plugins that extend the functionality of an express.js application) and then passes it to a route handler. The route handler parses the URI and gives the URI parameters to the implementation(s) associated with that route,  typically a call (in our controller) to our model, a call to a middleware function, or a list of calls to middleware functions or custom code. Once a response is ready, the result is given to the view engine. This engine renders the response that is given to the *Client*.
+The flow throughout our `express.js` gallery application is as follows. A *Client* makes an HTTP request to our gallery application. The express.js enabled gallery application first passes the request throughout various middleware functionality (plugins that extend the functionality of an express.js application) and then passes it to a route handler. The route handler parses the URI and gives the URI parameters to the implementation(s) associated with that route,  typically a call (in our controller) to our model, a call to a middleware function, or a list of calls to middleware functions or custom code. Once a response is ready, the result is given to the view engine. This engine renders the response that is given to the *Client*.
 
 ![Our Gallery Application is an Express.js app](./pics/ExpressMVC.png)
 
@@ -415,10 +416,11 @@ router.put('/photos/:username/:imageid', ...);
 router.delete('/photos/:username/:imageid', ...);
 ```
 
-We use oauth2orize to offer the above API towards OAuth 2.0 clients. To use oauth2orize, we include the library in the code (with `require`) and instantiate it with `createServer`. We register callback functions in this server. Our callback functions contain code to
+We use the [oauth2orize package](https://github.com/jaredhanson/oauth2orize) to offer the above API towards OAuth 2.0 clients. To use oauth2orize, we include the library in the code (with `require`) and instantiate it with `createServer`. We register callback functions in this server. Our callback functions contain code to
 
 - generate an authorization code. Our function `grantcode` is registered as a callback to `oauth2orize.grant.code`.
 - exchange an authorization code for an access token. Our function `exchangecode` is registered as a callback to `oauth2orize.exhange.authorizationCode`.
+- exchange a refresh token for an access token. Our function `refresh` is registered as a callback to `oauth2orize.exhange.refresh`.
 - (de-)serialize clients. Our functions `serialize` and `deserialize` are registered to transform a client object into a `client_id` and obtain a client object given the `client_id`.
 
 ```javascript
@@ -453,7 +455,7 @@ In this section, we present common security mistakes made when designing/impleme
 
 ##### Authorization Endpoint: Validate the RedirectURI Parameter
 
-If the authorization server does not validate that the redirect URI belongs to the client, it is susceptible to three types of attacks.
+If the authorization server does not validate that the redirect URI belongs to the client, it is susceptible to two types of attacks.
 
 - [Open Redirect](https://www.owasp.org/index.php/Unvalidated_Redirects_and_Forwards_Cheat_Sheet) enables attackers to redirect the victim to a site of their liking.
     ![Attacker redirects the victim the victim to a random site.](./pics/openredirect.gif)
