@@ -234,7 +234,7 @@ The interactions between `gallery` and `photoprint` are as follows (major use ca
     Referer: http://photoprint:3000/
     ```
 
-    As you notice, the URI contains the parameters `redirect_uri`, `scope`, `response_type`, and `client_id`. The `redirect_uri` is where `gallery` will redirect Vivian after having created an authorization code. The `scope` is the access level that the client needs (`view_gallery` is a custom scope that enables clients to view the pictures from a user's gallery). The `response_type` is `code` as we want an authorization code. The `client_id` is an identifier that represents the `photoprint` application.
+    As you notice, the URI contains the parameters `redirect_uri`, `scope`, `response_type`, and `client_id`. The `redirect_uri` is where `gallery` will redirect Vivian after having created an authorization code. The `scope` is the access level that the client needs (`view_gallery` is a custom scope that enables clients to view the pictures from a user's gallery). The `response_type` is `code` as we want to use the authorization code flow. The `client_id` is an identifier that represents the `photoprint` application.
 3. That server allows Vivian to authenticate to the gallery site and asks her if she consents to the Client accessing her pictures.
     ![Vivian can authenticate to the gallery site.](./pics/authcodegrant-dialog.png)
 4. Assuming that Vivian gives her consent, the AS generates an Authorization Code (Authorization Grant) and sends it back to Vivian’s browser with a redirect command toward the return URL specified by the Client.
