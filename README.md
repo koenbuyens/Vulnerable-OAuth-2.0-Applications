@@ -469,12 +469,12 @@ To validate this as a tester, do the following:
     One can use many payloads for redirect URI, including but not limited to.
     - If the redirect URI accepts external URLs, such as accounts.google.com, then use a redirector in that external URL to redirect to any website [https://accounts.google.com/signout/chrome/landing?continue=https://appengine.google.com/_ah/logout?continue%3Dhttp://attacker:1337](https://accounts.google.com/signout/chrome/landing?continue=https://appengine.google.com/_ah/logout?continue%3Dhttp://attacker:1337)
     - Use any of the regular bypasses
-        - http://example.com%2f%2f.victim.com
-        - http://example.com%5c%5c.victim.com
-        - http://example.com%3F.victim.com
-        - http://example.com%23.victim.com
-        - http://victim.com:80%40example.com
-        - http://victim.com%2eexample.com
+        - `http://example.com%2f%2f.victim.com`
+        - `http://example.com%5c%5c.victim.com`
+        - `http://example.com%3F.victim.com`
+        - `http://example.com%23.victim.com`
+        - `http://victim.com:80%40example.com`
+        - `http://victim.com%2eexample.com`
 
 ##### Authorization Endpoint: Generate Strong Authorization Codes
 
@@ -892,7 +892,6 @@ Partially taken from [https://oauth.net/2/](https://oauth.net/2/).
 - [OpenID Connect](http://openid.net/connect/)
 - [UMA](https://docs.kantarainitiative.org/uma/rec-uma-core.html)
 - [IndieAuth](https://indieauth.spec.indieweb.org/)
-
 
 ### Security/Penetration Testing
 
