@@ -457,7 +457,7 @@ In this section, we present common security mistakes made when designing/impleme
 
 If the authorization server does not validate that the redirect URI belongs to the client, it is susceptible to two types of attacks.
 
-- [Open Redirect](https://www.owasp.org/index.php/Unvalidated_Redirects_and_Forwards_Cheat_Sheet) enables attackers to redirect the victim to a site of their liking.
+- [Open Redirect](https://tools.ietf.org/html/rfc6819#section-4.2.4) enables attackers to redirect the victim to a site of their liking.
     ![Attacker redirects the victim the victim to a random site.](./pics/openredirect.gif)
 - Account hijacking by stealing authorization codes. If an attacker redirects to a site under their control, the authorization code - which is part of the URI - is given to them. They may be able to exchange it for an access token and thus get access to the user's resources (if the client credentials are compromised or not necessary).
     ![Attacker steals a valid authorization code from the victim.](./pics/openredirect_stealauthzcode.gif)
