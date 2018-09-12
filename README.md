@@ -68,6 +68,8 @@ a [Single Page Application](#single-page-application-implicit-grant-flow), and a
     - [Other Extensions](#other-extensions)
     - [Community Resources](#community-resources)
     - [Protocols Built on OAuth 2.0](#protocols-built-on-oauth-20)
+    - [Security/Penetration Testing](#securitypenetration-testing)
+      - [URI Redirect Bypass](#uri-redirect-bypass)
   - [TODOs](#todos)
 
 <!-- /TOC -->
@@ -451,27 +453,22 @@ In this section, we present common security mistakes made when designing/impleme
 
 ##### Authorization Endpoint: Validate the RedirectURI Parameter
 
-If the authorization server does not validate that the redirect URI belongs to the client, it is susceptible to two types of attacks:
+If the authorization server does not validate that the redirect URI belongs to the client, it is susceptible to three types of attacks.
 
-- [Open Redirect](https://www.owasp.org/index.php/Unvalidated_Redirects_and_Forwards_Cheat_Sheet). ![Attacker redirects the victim the victim to a random site.](./pics/openredirect.gif)
-- Stealing of Authorization Codes. ![Attacker steals a valid authorization code from the victim.](./pics/openredirect_stealauthzcode.gif)
-- XSS
+- [Open Redirect](https://www.owasp.org/index.php/Unvalidated_Redirects_and_Forwards_Cheat_Sheet) enables attackers to redirect the victim to a site of their liking.
+    ![Attacker redirects the victim the victim to a random site.](./pics/openredirect.gif)
+- Account hijacking by stealing authorization codes. If an attacker redirects to a site under their control, the authorization code - which is part of the URI - is given to them. They may be able to exchange it for an access token and thus get access to the user's resources (if the client credentials are compromised or not necessary).
+    ![Attacker steals a valid authorization code from the victim.](./pics/openredirect_stealauthzcode.gif)
 
-To remediate this, validate whether the `redirect_uri` parameter is one the client provided during the registration process. The match should be an exact match.
+To remediate this, validate whether the `redirect_uri` parameter is one the client provided during the registration process. The match should be an exact match as attackers will be able to bypass most validation code.
 
 To validate this as a tester, do the following:
 
 1. Capture the URL that the OAuth 2.0 client uses to talk with the authorization endpoint.  `http://gallery:3005/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Fphotoprint%3A3000%2Fcallback&scope=view_gallery&client_id=photoprint`
 2. Change the value of the redirect_uri parameter to one you control.  `http://gallery:3005/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Fattacker%3A1337%2Fcallback&scope=view_gallery&client_id=photoprint`
-    One can use many payloads, including but not limited to.
-    - XSS:
-        - data%3Atext%2Fhtml%2Ca&state=<script>alert('XSS')
-        - javascript://https://evil.com/?z=%0Aalert(1)
-    - Bypass validation:
-      - External accepted url:
-        - https://accounts.google.com/BackToAuthSubTarget?next=https://evil.com 
-        - https%3A%2F%2Fapps.facebook.com%2Fattacker%2F 
-      - regexes:
+    One can use many payloads for redirect URI, including but not limited to.
+    - If the redirect URI accepts external URLs, such as accounts.google.com, then use a redirector in that external URL to redirect to any website [https://accounts.google.com/signout/chrome/landing?continue=https://appengine.google.com/_ah/logout?continue%3Dhttp://attacker:1337](https://accounts.google.com/signout/chrome/landing?continue=https://appengine.google.com/_ah/logout?continue%3Dhttp://attacker:1337)
+    - Use any of the regular bypasses
         - http://example.com%2f%2f.victim.com
         - http://example.com%5c%5c.victim.com
         - http://example.com%3F.victim.com
