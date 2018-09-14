@@ -453,7 +453,7 @@ In this section, we present common security mistakes made when designing/impleme
 
 #### Gallery Authorization Server
 
-##### Authorization Endpoint: Validate the RedirectURI Parameter
+##### [Authorization Endpoint: Validate the RedirectURI Parameter](https://tools.ietf.org/html/rfc6819#section-4.2.4)
 
 If the authorization server does not validate that the redirect URI belongs to the client, it is susceptible to two types of attacks.
 
@@ -478,7 +478,7 @@ To validate this as a tester, do the following:
         - `http://victim.com:80%40example.com`
         - `http://victim.com%2eexample.com`
 
-##### Authorization Endpoint: Generate Strong Authorization Codes
+##### [Authorization Endpoint: Generate Strong Authorization Codes](https://tools.ietf.org/html/rfc6819#section-4.4.1.3)
 
 If the authorization codes are weak, an attacker may be able to guess them at the token endpoint. This is especially true if the client secret is compromised, not used, or not validated. ![Attacker correctly guesses the authorization codes by performing a bruteforce attack.](./pics/weakauthorizationcodes.gif)
 
@@ -496,7 +496,7 @@ To validate this as a tester, analyze the entropy of multiple captured authoriza
 
 Alternatively, bruteforce the tokens if you have a compromised client secret or if the client secret is not necessary. This is the approach the attacker took.
 
-##### Authorization Endpoint: Expire Unused Authorization Codes
+##### [Authorization Endpoint: Expire Unused Authorization Codes](https://tools.ietf.org/html/rfc6819#section-5.1.5.4)
 
 Expiring unused authorization codes limits the window in which an attacker can use captured or guessed authorization codes.
 
@@ -509,7 +509,7 @@ To validate this as a tester, obtain an authorization code but only redeem it af
 3. Configure the plugin by selecting a matching string that indicates the authorization code is invalid (typically 'Unauthorized') and a mininmum timeout of 31 minutes.  ![Send the request to session timeout test.](./pics/expiredauthorizationcodes_burptimeout2.png)
 4. Observe the result.
 
-##### Token Endpoint: Invalidate Authorization Codes After Use
+##### [Token Endpoint: Invalidate Authorization Codes After Use](https://tools.ietf.org/html/rfc6819#section-5.1.5.4)
 
 Invalidating used authorization codes limits the window in which an attacker can use captured or guessed authorization codes.
 
@@ -521,15 +521,15 @@ To validate this as a tester, obtain an authorization code and redeem it twice.
 2. Send that request to BurpSuite Repeater.
 3. Repeat that request and validate whether it fails.
 
-##### Token Endpoint: Bind the Authorization Code to the Client
+##### [Token Endpoint: Bind the Authorization Code to the Client](https://tools.ietf.org/html/rfc6819#section-5.2.4.4)
 
 An attacker can exchange captured or guessed authorization codes for access tokens by using the credentials for another, potentially malicious, client.
 
 ![Attacker can exchange the authorization code for an access token as it is not bound to the photoprint client.](./pics/authorizationcodenotboundtoclient.gif)
 
-To remediate this, bind the authorization code to the client.
+To remediate this, bind the authorization code to the [client ID]((https://tools.ietf.org/html/rfc6819#section-5.2.4.4)) and the [redirect URI](https://tools.ietf.org/html/rfc6819#section-5.2.4.5).
 
-To validate this as a tester, obtain an authorization code for the OAuth 2.0 client and exchange with another client.
+To validate this as a tester, obtain an authorization code (guessed or captured) for an OAuth 2.0 client and exchange with another client.
 
 ```http
 POST /oauth/token HTTP/1.1
@@ -540,7 +540,7 @@ Connection: close
 code=9&redirect_uri=http%3A%2F%2Fphotoprint%3A3000%2Fcallback&grant_type=authorization_code&client_id=maliciousclient&client_secret=secret
 ```
 
-##### Token Endpoint: Generate Strong Handle-Based Access and Refresh Tokens
+##### [Token Endpoint: Generate Strong Handle-Based Access and Refresh Tokens](https://tools.ietf.org/html/rfc6819#section-5.1.4.2.2)
 
 If the tokens are weak, an attacker may be able to guess them at the resource server or the token endpoint. ![Attacker correctly guesses the access tokens by performing a bruteforce attack.](./pics/weakaccesstokens.png)
 
@@ -565,7 +565,7 @@ To validate this as a tester, analyze the entropy of multiple captured tokens. N
 
 Alternatively, bruteforce the tokens at the resource server if you have a compromised client secret or if the client secret is not necessary. The attacker above followed this approach.
 
-##### Token Endpoint: Store Handle-Based Access and Refresh Tokens Securely
+##### [Token Endpoint: Store Handle-Based Access and Refresh Tokens Securely](https://tools.ietf.org/html/rfc6819#section-4.5.2)
 
 If the handle-based tokens are stored as plain text, an attacker may be able to obtain them from the database at the resource server or the token endpoint.
 
@@ -575,7 +575,7 @@ To remediate this, hash the tokens before storing them using a strong hashing al
 
 To validate this as a tester, obtain the contents of the database via a NoSQL/SQL injection attack, and validate whether the tokens have been stored unhashed. Note that it is better to validate this using a code review.
 
-##### Token Endpoint: Expire Access and Refresh Tokens
+##### [Token Endpoint: Expire Access and Refresh Tokens](https://tools.ietf.org/html/rfc6819#section-5.1.5.3)
 
 Expiring access and refresh tokens limits the window in which an attacker can use captured or guessed tokens.
 
