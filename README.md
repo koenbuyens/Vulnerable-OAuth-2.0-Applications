@@ -583,7 +583,7 @@ To remediate this, expire access tokens 15-30 minutes after they have been gener
 
 To validate this as a tester, obtain an access token but only redeem it after 31 minutes.
 
-##### Token Endpoint: Store Client Secrets Securely
+##### [Token Endpoint: Store Client Secrets Securely](https://tools.ietf.org/html/rfc6819#section-5.3.3)
 
 If the client secrets are stored as plain text, an attacker may be able to obtain them from the database at the resource server or the token endpoint.
 
