@@ -75,9 +75,10 @@ Once you selected the grants, you need to make various local design decisions as
 - Read [Authorization Code Grant](authorizationcode.md) to understand how to use this grant for a classic web application.
   - Read [Developer: Minor Design Decisions and Insecure Implementation](authorizationcode_developer.md) to understand the common security pitfals and how to avoid them. 
   - Read [Tester: Exploit Mistakes](authorizationcode_tester.md) to understand how you can detect and exploit those common mistakes.
-- Read [Authorization Code Grant with PKCE](pkce.md) to understand how to use this grant for a third-party mobile application.
 - Read [Implicit Grant](implicit.md) to understand how to use this grant for a Single-Page web application.
 - Read [Resource Owner Password Credentials Grant](resourceowner.md) to understand how to use this flow with a first party mobile application.
+- Read [Client Credentials Grant](clientcredentials.md) to understand how to use this flow in a B2B scenario.
+- Read [Authorization Code Grant with PKCE](pkce.md) to understand how to use this grant for a third-party mobile application.
 
 ## Conclusion
 
